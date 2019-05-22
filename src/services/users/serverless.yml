@@ -1,0 +1,10 @@
+service: hex-users
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+
+
+functions:
+  hello:
+    handler: handler.hello
