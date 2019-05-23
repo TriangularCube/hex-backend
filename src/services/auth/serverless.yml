@@ -1,0 +1,30 @@
+service: hex-auth
+
+custom:
+    stage: ${opt:stage, self:provider.stage}
+
+provider:
+    - ${file{../provider.yml}}
+
+resources:
+    Resources:
+        CognitoUserPool:
+            Type: AWS::Cognito::UserPool
+            Properties:
+                # Pool name based on stage
+                UserPoolName: hex-${self:custom.stage}-user-pool
+
+                # Set Preferred Username as Alias
+                AliasAttributes:
+                    - preferred_username
+
+        CognitoUserPoolClient:
+            Type: AWS::Cognito::UserPoolClient
+            Properties:
+                # Generate an App Client Name based on stage
+                ClientName: hex-${self:custom.stage}-user-pool-client
+                UserPoolId:
+                    Ref: CognitoUserPool
+                ExplicitAuthFlows:
+                    - ADMIN_NO_SRP_AUTH
+                GenerateSecret: false
