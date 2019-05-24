@@ -1,0 +1,48 @@
+service: hex-user-uploads
+
+custom:
+    # Our stage is based on what is passed in when running serverless
+    # commands. Or falls back to what we have set in the provider section.
+    stage: ${opt:stage, self:provider.stage}
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+    region: us-west-2
+
+resources:
+    Resources:
+        UploadsBucket:
+            Type: AWS::S3::Bucket
+            Properties:
+                # CORS Policy
+                CorsConfiguration:
+                    CorsRules:
+                        -
+                            AllowedOrigins:
+                                - '*'
+                            AllowedHeaders:
+                                - '*'
+                            AllowedMethods:
+                                - GET
+                                - PUT
+                                - POST
+                                - DELETE
+                                - HEAD
+                            MaxAge: 3000
+
+    Outputs:
+        UploadsBucketArn:
+            Value:
+                Fn::GetAtt:
+                    - UploadsBucket
+                    - Arn
+            Export:
+                Name: ${self:custom.stage}-UploadsBucketArn
+
+        UploadsBucketName:
+            Value:
+                Ref: UploadsBucket
+            Export:
+                Name: ${self:custom.stage}-UploadsBucket
