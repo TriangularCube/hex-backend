@@ -17,6 +17,9 @@ resources:
                 # Pool name based on stage
                 UserPoolName: hex-${self:custom.stage}-user-pool
 
+                AutoVerifiedAttributes:
+                    - email
+
                 # Set Preferred Username as Alias
                 AliasAttributes:
                     - email
