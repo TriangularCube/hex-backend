@@ -4,7 +4,10 @@ custom:
     stage: ${opt:stage, self:provider.stage}
 
 provider:
-    - ${file{../provider.yml}}
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+    region: us-west-2
 
 resources:
     Resources:

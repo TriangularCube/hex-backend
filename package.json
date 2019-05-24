@@ -6,13 +6,13 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "keywords": [],
     "author": "Michael Liu",
     "license": "None",
     "devDependencies": {
         "aws-sdk": "^2.460.0",
         "serverless": "^1.43.0",
         "serverless-offline": "^4.10.5",
+        "serverless-plugin-tables": "^1.0.2",
         "serverless-webpack": "^5.3.0",
         "webpack": "^4.32.1",
         "webpack-node-externals": "^1.7.2"
