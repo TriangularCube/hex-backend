@@ -50,3 +50,8 @@ resources:
                 ExplicitAuthFlows:
                     - ADMIN_NO_SRP_AUTH
                 GenerateSecret: false
+
+Outputs:
+    UserPoolId:
+        Value:
+            Ref: CognitoUserPool
