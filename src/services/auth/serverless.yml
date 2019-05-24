@@ -25,6 +25,12 @@ resources:
                     - email
                     - preferred_username
 
+                Schema:
+                    - Name: email
+                      AttributeDataType: String
+                      Mutable: true
+                      Required: true
+
                 # Password Policy
                 Policies:
                     PasswordPolicy:
