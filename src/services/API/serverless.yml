@@ -1,4 +1,4 @@
-service: hex-api-endpoints
+service: hex-base-api-endpoint
 
 custom:
     # Our stage is based on what is passed in when running serverless
@@ -16,11 +16,12 @@ resources:
         HexApiGW:
             Type: AWS::ApiGateway::RestApi
             Properties:
-                Name: HexApiGW
+                Name: ${self:custom.stage}-HexApiGW
+                Description: API Gateway for Hexahedron.io
 
     Outputs:
-        apiGatewayRestApiId:
+        ApiGatewayRestApiId:
             Value:
                 Ref: HexApiGW
             Export:
-                Name: HexApiGateway-restApiId
+                Name: ${self:custom.stage}-HexApiGateway-restApiId
