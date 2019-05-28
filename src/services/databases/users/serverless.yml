@@ -17,7 +17,7 @@ provider:
     name: aws
     runtime: nodejs10.x
     stage: dev
-    region: us-east-1
+    region: us-west-2
 
 resources:
     Resources:
@@ -29,5 +29,20 @@ resources:
                 AttributeDefinitions:
                     - AttributeName: userId
                       AttributeType: S
-                    - AttributeName: username
-                      AttributeType: S
+
+                KeySchema:
+                    - AttributeName: userId
+                      KeyType: HASH
+
+                ProvisionedThroughput:
+                    ReadCapacityUnits: ${self:custom.tableThroughput}
+                    WriteCapacityUnits: ${self:custom.tableThroughput}
+
+    Outputs:
+        UserTableArn:
+            Value:
+                Fn::GetAtt:
+                    - UserTable
+                    - Arn
+            Export:
+                Name: ${self:custom.stage}-UserTableArn

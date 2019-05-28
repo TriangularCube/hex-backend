@@ -3,6 +3,7 @@ Service Deployment Order
 Phase 1:
 - Uploads
 - API
+- User Table
 
 Phase 2:
 - Auth: _Uploads_
