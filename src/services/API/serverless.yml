@@ -25,3 +25,11 @@ resources:
                 Ref: HexApiGW
             Export:
                 Name: ${self:custom.stage}-HexApiGateway-restApiId
+
+        ApiGatewayRestApiRootResourceId:
+            Value:
+                Fn::GetAtt:
+                    - HexApiGW
+                    - RootResourceId
+            Export:
+                Name: ${self:custom.stage}-HexApiGateway-rootResourceId
