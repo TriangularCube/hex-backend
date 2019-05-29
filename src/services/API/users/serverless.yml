@@ -10,6 +10,9 @@ provider:
     runtime: nodejs10.x
     stage: dev
     region: us-west-2
+    deploymentBucket:
+        name: hex-deployment-bucket
+        serverSideEncryption: AES256
     apiGateway:
         restApiId:
             'Fn::ImportValue': ${self:custom.stage}-HexApiGateway-restApiId

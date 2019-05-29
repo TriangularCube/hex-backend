@@ -1,4 +1,4 @@
-service: hex-user-database
+service: hex-database-users
 
 custom:
     # Stage based on passed param, with fallback
@@ -18,6 +18,9 @@ provider:
     runtime: nodejs10.x
     stage: dev
     region: us-west-2
+    deploymentBucket:
+        name: hex-deployment-bucket
+        serverSideEncryption: AES256
 
 resources:
     Resources:
