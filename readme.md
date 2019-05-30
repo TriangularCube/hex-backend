@@ -4,9 +4,9 @@ Phase 1:
 - Uploads
 - API
 - User Table
+- Auth
 
 Phase 2:
-- Auth: _Uploads_
 - API Users: _API_
 
 ---

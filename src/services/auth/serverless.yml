@@ -44,17 +44,6 @@ resources:
                         RequireSymbols: false
                         RequireUppercase: false
 
-        HexIdentityPoolClient:
-            Type: AWS::Cognito::UserPoolClient
-            Properties:
-                # Generate an App Client Name based on stage
-                ClientName: hex-${self:custom.stage}-identity-pool-client
-                UserPoolId:
-                    Ref: HexUserPool
-                ExplicitAuthFlows:
-                    - ADMIN_NO_SRP_AUTH
-                GenerateSecret: false
-
         HexWebAppClient:
             Type: AWS::Cognito::UserPoolClient
             Properties:
@@ -64,100 +53,12 @@ resources:
                     Ref: HexUserPool
                 GenerateSecret: false
 
-        # Identity Pool
-        HexIdentityPool:
-            Type: AWS::Cognito::IdentityPool
-            Properties:
-                # Generate name based on stage
-                IdentityPoolName: hex ${self:custom.stage} identity pool
-                AllowUnauthenticatedIdentities: false
-
-                # Link User Pool
-                CognitoIdentityProviders:
-                    - ClientId:
-                          Ref: HexIdentityPoolClient
-                      ProviderName:
-                          Fn::GetAtt:
-                              - HexUserPool
-                              - ProviderName
-
-        # IAM Roles
-        IdentityPoolRoles:
-            Type: AWS::Cognito::IdentityPoolRoleAttachment
-            Properties:
-                IdentityPoolId:
-                    Ref: HexIdentityPool
-                Roles:
-                    authenticated:
-                        Fn::GetAtt:
-                            - AuthedUserRole
-                            - Arn
-
-        # Role for Authorized Users
-        AuthedUserRole:
-            Type: AWS::IAM::Role
-            Properties:
-                RoleName: AuthorizedHexUser
-                Path: /
-                AssumeRolePolicyDocument:
-                    Version: '2012-10-17'
-                    Statement:
-                        - Effect: Allow
-                          Principal:
-                              Federated: 'cognito-identity.amazonaws.com'
-                          Action:
-                              - 'sts:AssumeRoleWithWebIdentity'
-                          Condition:
-                              StringEquals:
-                                  'cognito-identity.amazonaws.com:aud':
-                                      Ref: HexUserPool
-                              'ForAnyValue:StringLike':
-                                  'cognito-identity.amazonaws.com:amr': authenticated
-
-                Policies:
-                    - PolicyName: 'HexAuthorizedPolicy'
-                      PolicyDocument:
-                          Version: '2012-10-17'
-                          Statement:
-
-                              # This grants Invoke permissions to Authorized users.
-                              # This needs to be changed to all users, then secure on Lambda side
-                              - Effect: Allow
-                                Action:
-                                    - 'execute-api:Invoke'
-                                Resource:
-                                    Fn::Join:
-                                        - ''
-                                        -
-                                            - 'arn:aws:execute-api'
-                                            - Ref: AWS::Region
-                                            - ':'
-                                            - Ref: AWS::AccountId
-                                            - 'Fn::ImportValue': ${self:custom.stage}-HexApiGateway-restApiId
-
-                              - Effect: Allow
-                                Action:
-                                    - 's3:GetObject'
-                                Resource:
-                                    -   Fn::Join:
-                                            - ''
-                                            -   - 'Fn::ImportValue': ${self:custom.stage}-UploadsBucketArn
-                                                - '/private/'
-                                                - '$'
-                                                - '{cognito-identity.amazonaws.com:sub}/*'
-
     # Output, mostly for testing purposes
     Outputs:
-        UserPoolId:
-            Value:
-                Ref: HexUserPool
-
-        IdentityPoolClient:
-            Value:
-                Ref: HexIdentityPoolClient
-
-        IdentityProviderName:
+        HexUserPoolArn:
             Value:
                 Fn::GetAtt:
                     - HexUserPool
-                    - ProviderName
+                    - Arn
+            Export:
+                Name: ${self:custom.stage}-hex-user-pool-arn
