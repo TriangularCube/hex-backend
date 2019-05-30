@@ -44,15 +44,24 @@ resources:
                         RequireSymbols: false
                         RequireUppercase: false
 
-        HexUserPoolClient:
+        HexIdentityPoolClient:
             Type: AWS::Cognito::UserPoolClient
             Properties:
                 # Generate an App Client Name based on stage
-                ClientName: hex-${self:custom.stage}-user-pool-client
+                ClientName: hex-${self:custom.stage}-identity-pool-client
                 UserPoolId:
                     Ref: HexUserPool
                 ExplicitAuthFlows:
                     - ADMIN_NO_SRP_AUTH
+                GenerateSecret: false
+
+        HexWebAppClient:
+            Type: AWS::Cognito::UserPoolClient
+            Properties:
+                # Generate an App Client Name based on stage
+                ClientName: hex-${self:custom.stage}-web-app-client
+                UserPoolId:
+                    Ref: HexUserPool
                 GenerateSecret: false
 
         # Identity Pool
@@ -66,7 +75,7 @@ resources:
                 # Link User Pool
                 CognitoIdentityProviders:
                     - ClientId:
-                          Ref: HexUserPoolClient
+                          Ref: HexIdentityPoolClient
                       ProviderName:
                           Fn::GetAtt:
                               - HexUserPool
@@ -143,9 +152,9 @@ resources:
             Value:
                 Ref: HexUserPool
 
-        UserPoolClient:
+        IdentityPoolClient:
             Value:
-                Ref: HexUserPoolClient
+                Ref: HexIdentityPoolClient
 
         IdentityProviderName:
             Value:
