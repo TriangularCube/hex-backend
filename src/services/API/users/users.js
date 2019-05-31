@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.hello = async (event) => {
+module.exports.main = async ( event, context ) => {
 
     const headers = {
         "Access-Control-Allow-Origin": "*"
@@ -11,7 +11,7 @@ module.exports.hello = async (event) => {
         headers: headers,
         body: JSON.stringify({
             message: 'Go Serverless v1.0! Your function executed successfully!',
-            input: event,
+            event: event
         }, null, 2),
     };
 
