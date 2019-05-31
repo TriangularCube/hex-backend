@@ -10,7 +10,7 @@
     "license": "None",
     "devDependencies": {
         "aws-sdk": "^2.463.0",
-        "serverless": "^1.43.0",
+        "serverless": "^1.44.1",
         "serverless-offline": "^4.10.6",
         "serverless-plugin-tables": "^1.0.2",
         "serverless-webpack": "^5.3.0",
