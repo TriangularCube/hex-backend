@@ -2,21 +2,19 @@ Service Deployment Order
 
 Phase 1:
 - Uploads
-- API
+- API Base
 - User Table
 - Auth
+- Custom Authorizer
 
 Phase 2:
-- API Users: _API_
+- API Users: _API, Authorizer_
 
 ---
 Dependencies
 
 - AWS SDK
-- Webpack
-    * Node Externals
 - Serverless
-    * Offline
-    * Webpack
+    - Offline
 - Serverless Plugins
     * Tables
