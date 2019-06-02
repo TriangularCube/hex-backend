@@ -5,9 +5,11 @@ Phase 1:
 - API Base
 - User Table
 - Auth
-- Custom Authorizer
 
 Phase 2:
+- Authorizer: _Auth_
+
+Phase 3:
 - API Users: _API, Authorizer_
 
 ---
