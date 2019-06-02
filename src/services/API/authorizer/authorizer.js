@@ -3,9 +3,10 @@
 const rp = require( 'request-promise-native' );
 const jose = require( 'node-jose' );
 
-// Region, UserPoolId, and AuthorizerClient coming from environment variables
+// Region and UserPoolId coming from environment variables
 
 // URL to fetch the public keys from Cognito
+//const keys_url =  'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_Rnsjcsoms/.well-known/jwks.json';
 const keys_url = 'https://cognito-idp.' + process.env.Region + '.amazonaws.com/' + process.env.UserPoolId + '/.well-known/jwks.json';
 
 module.exports.main = async ( event ) => {
@@ -29,7 +30,8 @@ module.exports.main = async ( event ) => {
     }
 
     // Get the KID from header
-    const header = jose.util.base64url.decode( sections[0] );
+    let header = jose.util.base64url.decode( sections[0] );
+    header = JSON.parse( header );
     const kid = header.kid;
 
     // Download the public keys
@@ -63,7 +65,7 @@ module.exports.main = async ( event ) => {
     let jwkKey;
     try{
         // Construct public key
-        jwkKey = jose.JWK.asKey(keys[key_index]);
+        jwkKey = await jose.JWK.asKey( keys[key_index] );
     } catch( e ) {
         let msg = 'Public key cannot be used as JWK Key. e: ' + e.message;
         console.error( msg );
@@ -72,7 +74,7 @@ module.exports.main = async ( event ) => {
 
     let verified;
     try{
-        verified = jose.JWS.createVerify( jwkKey ).verify( token );
+        verified = await jose.JWS.createVerify( jwkKey ).verify( token );
     } catch( e ) {
         let msg = 'Could not use public key as JWK. e: ' + e.message;
         console.error( msg );
@@ -89,17 +91,13 @@ module.exports.main = async ( event ) => {
         throw new Error( 'Token is expired' );
     }
 
-    // Also the audience
-    if( claims.aud !== process.env.UserPoolId ){
-        console.error( 'Token was not issued for this audience' );
-        throw new Error( 'Token was not issued for this audience' );
-    }
+    // Not going to verify the audience now (which is the app client id)
 
     // Passed all checks
     let contextData = {
-        claims: claims
+        user: claims['cognito:username']
     };
-    const authPolicy = generatePolicy( 'user', 'Allow', event.methodArn, contextData );
+    const authPolicy = generatePolicy( claims['cognito:username'], 'Allow', event.methodArn, contextData );
 
     return( authPolicy );
 

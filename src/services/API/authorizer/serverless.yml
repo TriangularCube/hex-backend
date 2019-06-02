@@ -25,8 +25,6 @@ functions:
             Region: ${self:provider.region}
             UserPoolId:
                 Fn::ImportValue: ${self:custom.stage}-hex-user-pool-id
-            AuthorizerClient:
-                Fn::ImportValue: ${self:custom.stage}-hex-authorizer-client-id
 
 resources:
     Outputs:

@@ -53,13 +53,6 @@ resources:
                     Ref: HexUserPool
                 GenerateSecret: false
 
-        HexAuthorizerClient:
-            Type: AWS::Cognito::UserPoolClient
-            Properties:
-                ClientName: hex-${self:custom.stage}-authorizer-client
-                UserPoolId:
-                    Ref: HexUserPool
-                GenerateSecret: false
 
     # Output, mostly for testing purposes
     Outputs:
@@ -68,11 +61,6 @@ resources:
                 Ref: HexUserPool
             Export:
                 Name: ${self:custom.stage}-hex-user-pool-id
-        HexAuthorizerClientId:
-            Value:
-                Ref: HexAuthorizerClient
-            Export:
-                Name: ${self:custom.stage}-hex-authorizer-client-id
         HexUserPoolArn:
             Value:
                 Fn::GetAtt:
