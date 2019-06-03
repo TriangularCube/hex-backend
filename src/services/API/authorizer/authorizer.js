@@ -1,13 +1,15 @@
 'use strict';
 
-const rp = require( 'request-promise-native' );
 const jose = require( 'node-jose' );
 
 // Region and UserPoolId coming from environment variables
 
 // URL to fetch the public keys from Cognito
 //const keys_url =  'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_Rnsjcsoms/.well-known/jwks.json';
-const keys_url = 'https://cognito-idp.' + process.env.Region + '.amazonaws.com/' + process.env.UserPoolId + '/.well-known/jwks.json';
+//const keys_url = 'https://cognito-idp.' + process.env.Region + '.amazonaws.com/' + process.env.UserPoolId + '/.well-known/jwks.json';
+
+// Going to try caching well known keys from cognito pool
+// const keys = require( './keys' )['keys'];
 
 module.exports.main = async ( event ) => {
 
@@ -16,7 +18,7 @@ module.exports.main = async ( event ) => {
 
     // Non-authenticated user
     if( token === 'none' ){
-        return generatePolicy( 'user', 'Allow', event.methodArn, null );
+        return generatePolicy( 'none', 'Allow', event.methodArn, null );
     }
 
     let sections;
@@ -34,17 +36,9 @@ module.exports.main = async ( event ) => {
     header = JSON.parse( header );
     const kid = header.kid;
 
-    // Download the public keys
-    let body;
-    try{
-        body = await rp( keys_url );
-    } catch( e ) {
-        let msg = 'Cognito unreachable';
-        console.error( msg );
-        throw new Error( msg );
-    }
+    // No longer downloading public keys
 
-    const keys = JSON.parse( body )[ 'keys' ];
+    const keys = require( './keys.json' )['keys'];
 
     // Search for the kid in the downloaded public keys
     let key_index = -1;
