@@ -12,6 +12,14 @@ provider:
         name: hex-deployment-bucket
         serverSideEncryption: AES256
 
+#funcitons:
+#    postConfirm:
+#        handler: postConfirm.main
+#        events:
+#            - HexUserPool
+#                pool: HexUserPool
+#                trigger: PostConfirmation
+
 resources:
     Resources:
         # User Pool
@@ -21,13 +29,11 @@ resources:
                 # Pool name based on stage
                 UserPoolName: hex-${self:custom.stage}-user-pool
 
-                AutoVerifiedAttributes:
+                UsernameAttributes:
                     - email
 
-                # Set Preferred Username as Alias
-                AliasAttributes:
+                AutoVerifiedAttributes:
                     - email
-                    - preferred_username
 
                 Schema:
                     - Name: email
