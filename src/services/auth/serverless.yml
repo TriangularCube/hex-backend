@@ -12,13 +12,9 @@ provider:
         name: hex-deployment-bucket
         serverSideEncryption: AES256
 
-#funcitons:
-#    postConfirm:
-#        handler: postConfirm.main
-#        events:
-#            - HexUserPool
-#                pool: HexUserPool
-#                trigger: PostConfirmation
+functions:
+    postConfirm:
+        handler: postConfirm.main
 
 resources:
     Resources:
@@ -50,6 +46,12 @@ resources:
                         RequireSymbols: false
                         RequireUppercase: false
 
+                LambdaConfig:
+                    PostConfirmation:
+                        Fn::GetAtt:
+                            - PostConfirmLambdaFunction
+                            - Arn
+
         HexWebAppClient:
             Type: AWS::Cognito::UserPoolClient
             Properties:
@@ -59,6 +61,20 @@ resources:
                     Ref: HexUserPool
                 GenerateSecret: false
 
+        UserPoolPostConfirmPermission:
+            Type: AWS::Lambda::Permission
+            Properties:
+                Action: lambda:InvokeFunction
+                FunctionName:
+                    Fn::GetAtt:
+                        - PostConfirmLambdaFunction
+                        - Arn
+                Principal: cognito-idp.amazonaws.com
+                SourceArn:
+                    Fn::GetAtt:
+                        - HexUserPool
+                        - Arn
+
 
     # Output, mostly for testing purposes
     Outputs:
@@ -67,10 +83,3 @@ resources:
                 Ref: HexUserPool
             Export:
                 Name: ${self:custom.stage}-hex-user-pool-id
-        HexUserPoolArn:
-            Value:
-                Fn::GetAtt:
-                    - HexUserPool
-                    - Arn
-            Export:
-                Name: ${self:custom.stage}-hex-user-pool-arn
