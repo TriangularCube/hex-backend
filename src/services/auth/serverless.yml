@@ -3,6 +3,10 @@ service: hex-auth
 custom:
     stage: ${opt:stage, self:provider.stage}
 
+plugins:
+    - serverless-plugin-common-excludes
+    - serverless-plugin-include-dependencies
+
 provider:
     name: aws
     runtime: nodejs10.x
@@ -12,9 +16,20 @@ provider:
         name: hex-deployment-bucket
         serverSideEncryption: AES256
 
+    iamRoleStatements:
+        - Effect: 'Allow'
+          Action: 'ssm:GetParameters'
+          Resource:
+            - 'arn:aws:ssm:us-west-2:852768116392:parameter/FaunaKey'
+        - Effect: 'Allow'
+          Action: 'kms:Decrypt'
+          Resource:
+            -  'arn:aws:kms:us-west-2:852768116392:key/a7bb10cf-bbb2-41bc-824d-561c4545dd88'
+
 functions:
     postConfirm:
         handler: postConfirm.main
+        memorySize: 256
 
 resources:
     Resources:

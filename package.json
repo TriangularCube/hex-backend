@@ -9,14 +9,15 @@
     "author": "Michael Liu",
     "license": "None",
     "devDependencies": {
-        "aws-sdk": "^2.466.0",
-        "fauna-shell": "^0.9.2",
-        "serverless": "^1.44.1",
+        "aws-sdk": "^2.476.0",
+        "serverless": "^1.45.1",
         "serverless-offline": "^4.10.6",
         "serverless-plugin-common-excludes": "^2.4.0",
         "serverless-plugin-include-dependencies": "^3.2.1"
     },
     "dependencies": {
+        "faunadb": "^2.6.1",
+        "middy": "^0.27.0",
         "node-jose": "^1.1.3"
     }
 }
