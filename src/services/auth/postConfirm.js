@@ -2,6 +2,8 @@ const middy = require( 'middy' );
 const { ssm } = require( 'middy/middlewares' );
 
 const faunadb = require( 'faunadb' );
+const q = faunadb.query;
+const client = faunadb.Client({ secret: process.env.faunaKey });
 
 const handler = async (event) => {
 
