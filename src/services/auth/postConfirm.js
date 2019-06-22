@@ -1,35 +1,53 @@
-const middy = require( 'middy' );
-const { ssm } = require( 'middy/middlewares' );
+const ssmModule = require( './ssm' ); // Import the SSM module
+const ssm = new ssmModule( ["FaunaKey"] ); // Spin up a new instance with our list of keys
 
 const faunadb = require( 'faunadb' );
 const q = faunadb.query;
-const client = faunadb.Client({ secret: process.env.faunaKey });
+let client;
 
-const handler = async (event) => {
+module.exports.main = async (event) => {
 
-    // Check the trigger source
-    if( event.triggerSource === 'PostConfirmation_ConfirmSignUp' ){
-
-        // If this source came from confirming sign up
-
-        const key = process.env.faunaKey;
-
-        console.log( key );
-
-        // Make a new user
-
-        
+    // If this source came from anything other than confirm sign up
+    if( event.triggerSource !== 'PostConfirmation_ConfirmSignUp' ){
+        // Return the event and end the lambda
+        return event;
     }
 
+    // Otherwise
+
+    // If there is no DB client already
+    if( !client ){
+
+        // Fetch the DB key
+        const dbKey = await ssm.getParam( 'FaunaKey' );
+
+        // Create a new client
+        client = new faunadb.Client({ secret: dbKey });
+
+    }
+
+    // Fetch the user SUB, the unique Cognito User Pool ID
+    const sub = event.request.userAttributes.sub;
+
+    try{
+
+        // Make a new user
+        const res = await client.query(
+            q.Create(
+                q.Class( "users" ),
+                { data: { id: sub, displayName: q.NewId() } }
+            )
+        );
+
+        // Log the result for record keeping
+        console.log( "Result from creating a new User: " + res );
+
+    } catch( e ) {
+        // Log the error for CloudWatch. This will probably be Instance not unique or something, but that should be caught earlier already
+        console.error( "Error message from trying to create new user: " + e.message );
+        console.error( "User SUB: " + sub );
+    }
+
+    // Finally we're done, so return the event unmodified, as the trigger doesn't require anything
     return event;
 };
-
-module.exports.main = middy( handler ).use(
-    // Using SSM middleware, will cache and decrypt for us
-    ssm({
-        cache: true,
-        names: {
-            faunaKey: 'FaunaKey'
-        }
-    })
-);
