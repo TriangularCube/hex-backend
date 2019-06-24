@@ -18,7 +18,7 @@ module.exports.main = async ( event ) => {
 
     // Non-authenticated user
     if( token === 'none' ){
-        return generatePolicy( 'none', 'Allow', event.methodArn, null );
+        return generatePolicy( 'none', 'Allow', "*", null );
     }
 
     let sections;
@@ -91,7 +91,7 @@ module.exports.main = async ( event ) => {
     let contextData = {
         user: claims['cognito:username']
     };
-    const authPolicy = generatePolicy( claims['cognito:username'], 'Allow', event.methodArn, contextData );
+    const authPolicy = generatePolicy( claims['cognito:username'], 'Allow', "*", contextData );
 
     return( authPolicy );
 
