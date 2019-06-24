@@ -1,11 +1,21 @@
 service: hex-auth
 
-custom:
-    stage: ${opt:stage, self:provider.stage}
-
 plugins:
     - serverless-plugin-common-excludes
+    - serverless-package-external
     - serverless-plugin-include-dependencies
+
+custom:
+    # Package External plugin config
+    packageExternal:
+        external:
+            - '../../util/ssm.js'
+
+    stage: ${opt:stage, self:provider.stage}
+
+package:
+    # Exclude Dev Dependencies for default Serverless, since plugin is doing it faster
+    excludeDevDependencies: false
 
 provider:
     name: aws

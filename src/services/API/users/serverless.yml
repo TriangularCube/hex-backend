@@ -2,9 +2,23 @@ service: hex-api-users
 
 plugins:
     - serverless-plugin-common-excludes
+    - serverless-package-external
     - serverless-plugin-include-dependencies
 
+package:
+    # Exclude Dev Dependencies for default Serverless, since plugin is doing it faster
+    excludeDevDependencies: false
+
+    # Excluding utils, since "Include Dependencies" can't add it to the right directory
+    #excludes:
+        #- src/util/**.js
+
 custom:
+    # Package External plugin config
+    packageExternal:
+        external:
+            - '../../../util/ssm.js'
+
     # Our stage is based on what is passed in when running serverless
     # commands. Or falls back to what we have set in the provider section.
     stage: ${opt:stage, self:provider.stage}
@@ -22,6 +36,15 @@ provider:
             'Fn::ImportValue': ${self:custom.stage}-HexApiGateway-restApiId
         restApiRootResourceId:
             'Fn::ImportValue': ${self:custom.stage}-HexApiGateway-rootResourceId
+    iamRoleStatements:
+        -   Effect: 'Allow'
+            Action: 'ssm:GetParameters'
+            Resource:
+                - 'arn:aws:ssm:us-west-2:852768116392:parameter/FaunaKey'
+        -   Effect: 'Allow'
+            Action: 'kms:Decrypt'
+            Resource:
+                - 'arn:aws:kms:us-west-2:852768116392:key/a7bb10cf-bbb2-41bc-824d-561c4545dd88'
 
 functions:
     users:

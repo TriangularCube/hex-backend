@@ -1,4 +1,4 @@
-const ssmModule = require( '../../util/ssm' ); // Import the SSM module
+const ssmModule = require( './ssm' ); // Import the SSM module
 const ssm = new ssmModule( ["FaunaKey"] ); // Spin up a new instance with our list of keys
 
 const faunadb = require( 'faunadb' );
