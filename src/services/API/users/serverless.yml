@@ -49,6 +49,14 @@ functions:
         handler: users.main
         events:
             - http:
+                  path: users
+                  method: get
+                  cors: true
+
+    user:
+        handler: user.main
+        events:
+            - http:
                 path: user/{displayName}
                 method: get
                 cors: true
