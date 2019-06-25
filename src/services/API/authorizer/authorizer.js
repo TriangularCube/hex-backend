@@ -2,14 +2,16 @@
 
 const jose = require( 'node-jose' );
 
+// Backup
+//const keys_url =  'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_Rnsjcsoms/.well-known/jwks.json';
+
 // Region and UserPoolId coming from environment variables
 
 // URL to fetch the public keys from Cognito
-//const keys_url =  'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_Rnsjcsoms/.well-known/jwks.json';
-//const keys_url = 'https://cognito-idp.' + process.env.Region + '.amazonaws.com/' + process.env.UserPoolId + '/.well-known/jwks.json';
+const keys_url = 'https://cognito-idp.' + process.env.Region + '.amazonaws.com/' + process.env.UserPoolId + '/.well-known/jwks.json';
 
 // Going to try caching well known keys from cognito pool
-// const keys = require( './keys' )['keys'];
+let keys;
 
 module.exports.main = async ( event ) => {
 
@@ -36,9 +38,23 @@ module.exports.main = async ( event ) => {
     header = JSON.parse( header );
     const kid = header.kid;
 
-    // No longer downloading public keys
+    // Peek in cache
+    if( !keys ){
+        try{
+            const fetch = require( 'node-fetch' );
+            // Try to fetch public keys
+            const res = await fetch( keys_url );
 
-    const keys = require( './keys.json' )['keys'];
+            // Set the keys to cached variable
+            keys = (await res.json()).keys;
+        } catch( e ) {
+
+            // Throw an error if fetch rejects
+            console.error( 'Fetching keys from ' + keys_url + ' failed' );
+            console.error( e.message );
+            throw new Error( 'Public keys failed to fetch, check logs' );
+        }
+    }
 
     // Search for the kid in the downloaded public keys
     let key_index = -1;
@@ -68,6 +84,7 @@ module.exports.main = async ( event ) => {
 
     let verified;
     try{
+        // Verify the claims
         verified = await jose.JWS.createVerify( jwkKey ).verify( token );
     } catch( e ) {
         let msg = 'Could not use public key as JWK. e: ' + e.message;

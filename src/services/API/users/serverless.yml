@@ -1,17 +1,15 @@
 service: hex-api-users
 
 plugins:
-    - serverless-plugin-common-excludes
     - serverless-package-external
+    - serverless-offline
     - serverless-plugin-include-dependencies
+    - serverless-plugin-common-excludes
+
 
 package:
     # Exclude Dev Dependencies for default Serverless, since plugin is doing it faster
     excludeDevDependencies: false
-
-    # Excluding utils, since "Include Dependencies" can't add it to the right directory
-    #excludes:
-        #- src/util/**.js
 
 custom:
     # Package External plugin config
