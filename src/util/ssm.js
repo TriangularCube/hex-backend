@@ -21,7 +21,7 @@ module.exports = class SSM {
         // Set the SSM instance
         ssmInstance = ssmInstance || SSM.loadSSM();
 
-        const res = await ssmInstance.getParameters({Names: this.listOfParams, WithDecryption: true } ).promise();
+        const res = await ssmInstance.getParameters({ Names: this.listOfParams, WithDecryption: true } ).promise();
 
         res.Parameters.map( (element) => {
             this.store[ element.Name ] = element.Value;
