@@ -20,6 +20,7 @@ module.exports.main = async ( event ) => {
 
     // Non-authenticated user
     if( token === 'none' ){
+        // TODO use an actual policy
         return generatePolicy( 'none', 'Allow', "*", null );
     }
 
@@ -108,6 +109,7 @@ module.exports.main = async ( event ) => {
     let contextData = {
         user: claims['cognito:username']
     };
+    // TODO use an actual policy
     const authPolicy = generatePolicy( claims['cognito:username'], 'Allow', "*", contextData );
 
     return( authPolicy );

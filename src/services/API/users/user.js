@@ -45,6 +45,7 @@ module.exports.main = async ( event ) => {
         "Access-Control-Allow-Origin": "*"
     };
 
+    // TODO Change this into an actual result
     return {
         statusCode: 200,
         headers: headers,
