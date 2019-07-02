@@ -1,0 +1,24 @@
+service: hex-faunadb-custom-resource
+
+plugins:
+    - serverless-deployment-bucket
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+    region: us-west-2
+    deploymentBucket:
+        name: hex-deployment-bucket
+        serverSideEncryption: AES256
+
+resources:
+    Resources:
+        #Our custom resource
+        FaunaDB:
+            Type: Custom::FaunaDB
+            Properties:
+                ServiceToken:
+                    Fn::GetAtt:
+                        - FaunaLambdaFunction
+                        - Arn
