@@ -47,6 +47,7 @@ provider:
 functions:
     users:
         handler: users.main
+        memorySize: 256
         events:
             - http:
                   path: users

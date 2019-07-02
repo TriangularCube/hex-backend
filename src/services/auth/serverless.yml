@@ -1,6 +1,7 @@
 service: hex-auth
 
 plugins:
+    - serverless-deployment-bucket
     - serverless-plugin-common-excludes
     - serverless-package-external
     - serverless-plugin-include-dependencies
