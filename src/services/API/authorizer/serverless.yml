@@ -1,6 +1,7 @@
 service: hex-api-authorizer
 
 plugins:
+    - serverless-deployment-bucket
     - serverless-plugin-common-excludes
     - serverless-plugin-include-dependencies
 
