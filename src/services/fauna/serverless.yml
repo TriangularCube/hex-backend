@@ -17,3 +17,10 @@ resources:
                 Tables:
                     - Users
                     - Others
+
+    Outputs:
+        Tables:
+            Value:
+                Fn::GetAtt:
+                    - FaunaDB
+                    - tables
