@@ -1,0 +1,19 @@
+service: faunadb-custom-resource
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+    region: us-west-2
+
+resources:
+    Resources:
+        # Our custom resource
+        FaunaDB:
+            Type: Custom::FaunaDB
+            Properties:
+                ServiceToken:
+                    Fn::ImportValue: fauna-custom-resource-lambda-arn
+                Tables:
+                    - Users
+                    - Others
