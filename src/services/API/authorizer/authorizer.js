@@ -21,7 +21,7 @@ module.exports.main = async ( event ) => {
     // Non-authenticated user
     if( token === 'none' ){
         // TODO use an actual policy
-        return generatePolicy( 'none', 'Allow', "*", null );
+        return generatePolicy( 'none', null );
     }
 
     let sections;
@@ -106,34 +106,28 @@ module.exports.main = async ( event ) => {
     // Not going to verify the audience now (which is the app client id)
 
     // Passed all checks
-    let contextData = {
-        user: claims['cognito:username']
-    };
-    // TODO use an actual policy
-    const authPolicy = generatePolicy( claims['cognito:username'], 'Allow', "*", contextData );
+
+    const authPolicy = generatePolicy( claims['cognito:username'], null );
 
     return( authPolicy );
 
 };
 
-function generatePolicy( principalId, effect, resource, context ){
+function generatePolicy( principalId, context ){
 
     const authResponse = {};
 
     authResponse.principalId = principalId;
 
-    if( effect && resource ){
-        let policyDocument = {};
-        policyDocument.Version = '2012-10-17';
-        policyDocument.Statement = [];
-
-        let statementOne = {};
-        statementOne.Action = 'execute-api:Invoke';
-        statementOne.Effect = effect;
-        statementOne.Resource = resource;
-        policyDocument.Statement[0] = statementOne;
-        authResponse.policyDocument = policyDocument;
-    }
+    authResponse.policyDocument = {
+        Version: '2012-10-17',
+        // Allow invoke API on all API Gateway endpoints in this AWS account in US-West-2
+        Statement: [{
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: 'arn:aws:execute-api:us-west-2:852768116392:*'
+        }]
+    };
 
     if( context ){
         authResponse.context = context;

@@ -22,6 +22,7 @@ provider:
 functions:
     authorizer:
         handler: authorizer.main
+        memorySize: 128
         environment:
             Region: ${self:provider.region}
             UserPoolId:
