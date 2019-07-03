@@ -7,7 +7,9 @@ const faunadb = require( 'faunadb' );
 const q = faunadb.query;
 let client;
 
-module.exports.main = async () => {
+module.exports.main = async ( event ) => {
+
+    console.log( event.queryStringParameters );
 
     // Make the client
     if( !client ){
@@ -26,9 +28,18 @@ module.exports.main = async () => {
             q.Paginate(
                 q.Match(
                     q.Index( "all_users")
-                )
+                ),
+                {
+                    size: 1
+                }
             )
         );
+
+        console.log( result );
+
+        console.log( result.hasOwnProperty( 'after' ) );
+
+        console.log( result.after[0].id );
 
     } catch( e ){
         console.error( e.message );
