@@ -10,17 +10,29 @@ resources:
     Resources:
         # Our custom resource
         FaunaDB:
-            Type: Custom::FaunaDB
+            Type: Custom::FaunaClass
             Properties:
                 ServiceToken:
-                    Fn::ImportValue: fauna-custom-resource-lambda-arn
-                Tables:
-                    - Users
-                    - Others
+                    Fn::ImportValue: fauna-class-lambda-arn
+                ClassName: users
+                Indexes:
+                    -
+                        Name: users_by_sub
+                        Terms:
+                            - data
+                            - sub
+                    -
+                        Name: users_by_displayName
+                        Terms:
+                            - data
+                            - displayName
 
-    Outputs:
-        Tables:
-            Value:
-                Fn::GetAtt:
-                    - FaunaDB
-                    - tables
+
+#    Outputs:
+#        Tables:
+#            Value:
+#                Fn::Join:
+#                    - ', '
+#                    - Fn::GetAtt:
+#                        - FaunaDB
+#                        - tables
