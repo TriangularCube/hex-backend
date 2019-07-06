@@ -15,6 +15,8 @@ resources:
                 ServiceToken:
                     Fn::ImportValue: fauna-class-lambda-arn
                 ClassName: users
+                KeyParameter: TestKey
+                KeyParameterSecure: false
                 Indexes:
                     -
                         Name: users_by_sub
@@ -27,12 +29,16 @@ resources:
                             - data
                             - displayName
 
-
-#    Outputs:
-#        Tables:
-#            Value:
-#                Fn::Join:
-#                    - ', '
-#                    - Fn::GetAtt:
-#                        - FaunaDB
-#                        - tables
+    Outputs:
+        Class:
+            Value:
+                Fn::GetAtt:
+                    - FaunaDB
+                    - ClassName
+        Indexes:
+            Value:
+                Fn::Join:
+                    - ', '
+                    - Fn::GetAtt:
+                        - FaunaDB
+                        - Indexes
