@@ -21,13 +21,15 @@ resources:
                     -
                         Name: users_by_sub
                         Terms:
-                            - data
-                            - sub
+                            -
+                                - data
+                                - sub
                     -
                         Name: users_by_displayName
                         Terms:
-                            - data
-                            - displayName
+                            -
+                                - data
+                                - displayName
 
     Outputs:
         Class:
