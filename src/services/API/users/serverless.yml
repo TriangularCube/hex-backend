@@ -1,6 +1,7 @@
 service: hex-api-users
 
 plugins:
+    - serverless-deployment-bucket
     - serverless-package-external
     - serverless-offline
     - serverless-plugin-include-dependencies

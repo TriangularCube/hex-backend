@@ -1,5 +1,8 @@
 service: faunadb-custom-resource
 
+plugins:
+    - serverless-deployment-bucket
+
 provider:
     name: aws
     runtime: nodejs10.x
@@ -20,13 +23,13 @@ resources:
                 ClassName: users
                 KeyParameterSecure: FaunaDevKey
                 Indices:
-                    -
+                    1:
                         Name: users_by_sub
                         Terms:
                             -
                                 - data
                                 - sub
-                    -
+                    2:
                         Name: users_by_displayName
                         Terms:
                             -
