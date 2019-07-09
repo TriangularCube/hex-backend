@@ -5,6 +5,9 @@ provider:
     runtime: nodejs10.x
     stage: dev
     region: us-west-2
+    deploymentBucket:
+        name: hex-deployment-bucket
+        serverSideEncryption: AES256
 
 resources:
     Resources:
@@ -15,9 +18,8 @@ resources:
                 ServiceToken:
                     Fn::ImportValue: fauna-class-lambda-arn
                 ClassName: users
-                KeyParameter: TestKey
-                KeyParameterSecure: false
-                Indexes:
+                KeyParameterSecure: FaunaDevKey
+                Indices:
                     -
                         Name: users_by_sub
                         Terms:
@@ -32,15 +34,8 @@ resources:
                                 - displayName
 
     Outputs:
-        Class:
+        Response:
             Value:
                 Fn::GetAtt:
                     - FaunaDB
-                    - ClassName
-        Indexes:
-            Value:
-                Fn::Join:
-                    - ', '
-                    - Fn::GetAtt:
-                        - FaunaDB
-                        - Indexes
+                    - Response
