@@ -23,18 +23,19 @@ resources:
                 ClassName: users
                 KeyParameterSecure: FaunaDevKey
                 Indices:
-                    1:
+                    -
                         Name: users_by_sub
                         Terms:
-                            -
+                            - field:
                                 - data
                                 - sub
-                    2:
+                    -
                         Name: users_by_displayName
                         Terms:
-                            -
+                            - field:
                                 - data
                                 - displayName
+                              transform: casefold
 
     Outputs:
         Response:
