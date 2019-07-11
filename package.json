@@ -6,10 +6,10 @@
     "author": "Michael Liu",
     "license": "None",
     "devDependencies": {
-        "aws-sdk": "^2.488.0",
-        "serverless": "^1.46.1",
+        "aws-sdk": "^2.491.0",
+        "serverless": "^1.47.0",
         "serverless-deployment-bucket": "^1.1.0",
-        "serverless-offline": "^5.6.0",
+        "serverless-offline": "^5.7.3",
         "serverless-package-external": "^1.1.1",
         "serverless-plugin-common-excludes": "^2.4.0",
         "serverless-plugin-include-dependencies": "^3.2.1"
