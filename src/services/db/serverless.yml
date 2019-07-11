@@ -25,12 +25,14 @@ resources:
                 Indices:
                     -
                         Name: users_by_sub
+                        ID: 1
                         Terms:
                             - field:
                                 - data
                                 - sub
                     -
-                        Name: users_by_displayName
+                        Name: users_by_sub
+                        ID: 2
                         Terms:
                             - field:
                                 - data
