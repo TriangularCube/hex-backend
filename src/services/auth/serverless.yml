@@ -10,6 +10,7 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
+            - '../../util/fauna/faunaSSM.js'
             - '../../util/ssm.js'
 
     stage: ${opt:stage, self:provider.stage}
@@ -28,14 +29,8 @@ provider:
         serverSideEncryption: AES256
 
     iamRoleStatements:
-        - Effect: 'Allow'
-          Action: 'ssm:GetParameters'
-          Resource:
-            - arn:aws:ssm:us-west-2:852768116392:parameter/fauna/FaunaKey-${self:custom.stage}
-        - Effect: 'Allow'
-          Action: 'kms:Decrypt'
-          Resource:
-            -  'arn:aws:kms:us-west-2:852768116392:key/*'
+        # Copy the role statement from file to avoid errors
+        ${ file( ../../util/fauna/faunaKeyRole.yml ) }
 
 functions:
     postConfirm:
