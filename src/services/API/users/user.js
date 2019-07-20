@@ -1,7 +1,9 @@
 'use strict';
 
-const ssmModule = require( './ssm' ); // Import the SSM module
-const ssm = new ssmModule( ["FaunaKey"] ); // Spin up a new instance with our list of keys
+// const ssmModule = require( './ssm' ); // Import the SSM module
+// const ssm = new ssmModule( ["FaunaKey"] ); // Spin up a new instance with our list of keys
+
+const getFaunaKey = require( './faunaSSM' );
 
 const faunadb = require( 'faunadb' );
 const q = faunadb.query;
@@ -13,7 +15,7 @@ module.exports.main = async ( event ) => {
     // Make the client
     if( !client ){
         // Fetch the DB key
-        const dbKey = await ssm.getParam( 'FaunaKey' );
+        const dbKey = await getFaunaKey();
 
         // Create a new client
         client = new faunadb.Client({ secret: dbKey });

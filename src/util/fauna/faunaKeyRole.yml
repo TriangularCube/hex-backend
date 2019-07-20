@@ -1,0 +1,8 @@
+-   Effect: 'Allow'
+    Action: 'ssm:GetParameters'
+    Resource:
+        - arn:aws:ssm:us-west-2:852768116392:parameter/fauna/FaunaKey-${self:custom.stage}
+-   Effect: 'Allow'
+    Action: 'kms:Decrypt'
+    Resource:
+        - 'arn:aws:kms:us-west-2:852768116392:key/a7bb10cf-bbb2-41bc-824d-561c4545dd88'

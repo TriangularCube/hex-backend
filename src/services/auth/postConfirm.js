@@ -1,6 +1,8 @@
-const ssmModule = require( './ssm' ); // Import the SSM module
-const faunaKeyName = `/fauna/FaunaKey-${process.env.STAGE}`;
-const ssm = new ssmModule( [faunaKeyName] ); // Spin up a new instance with our list of keys
+// const ssmModule = require( './ssm' ); // Import the SSM module
+// const faunaKeyName = `/fauna/FaunaKey-${process.env.STAGE}`;
+// const ssm = new ssmModule( [faunaKeyName] ); // Spin up a new instance with our list of keys
+
+const getFaunaKey = require( './faunaSSM' );
 
 const faunadb = require( 'faunadb' );
 const q = faunadb.query;
@@ -20,7 +22,7 @@ module.exports.main = async (event) => {
     if( !client ){
 
         // Fetch the DB key
-        const dbKey = await ssm.getParam( faunaKeyName );
+        const dbKey = await getFaunaKey();
 
         // Create a new client
         client = new faunadb.Client({ secret: dbKey });
@@ -36,7 +38,7 @@ module.exports.main = async (event) => {
         const res = await client.query(
             q.Create(
                 q.Collection( "users" ),
-                { data: { id: sub, displayName: q.NewId() } }
+                { data: { sub: sub, displayName: q.NewId() } }
             )
         );
 
