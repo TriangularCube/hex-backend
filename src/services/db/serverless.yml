@@ -3,6 +3,10 @@ service: faunadb-custom-resource
 plugins:
     - serverless-deployment-bucket
 
+custom:
+    stage: ${opt:stage, self:provider.stage}
+    key: /fauna/FaunaKey-${self:custom.stage}
+
 provider:
     name: aws
     runtime: nodejs10.x
@@ -21,7 +25,7 @@ resources:
                 ServiceToken:
                     Fn::ImportValue: fauna-collection-lambda-arn
                 CollectionName: users
-                KeyParameterSecure: /fauna/FaunaDevKey
+                KeyParameterSecure: ${self:custom.key}
                 Indices:
                     user-id:
                         Name: user_by_sub
@@ -38,7 +42,7 @@ resources:
                     Fn::ImportValue: fauna-collection-lambda-arn
 
                 CollectionName: cubes
-                KeyParameterSecure: /fauna/FaunaDevKey
+                KeyParameterSecure: ${self:custom.key}
                 Indices:
                     owner:
                         Name: cubes_by_owner
