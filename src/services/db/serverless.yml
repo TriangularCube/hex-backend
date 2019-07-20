@@ -15,33 +15,48 @@ provider:
 resources:
     Resources:
         # Our custom resource
-        FaunaDB:
-            Type: Custom::FaunaClass
+        UserCollection:
+            Type: Custom::FaunaCollection
             Properties:
                 ServiceToken:
-                    Fn::ImportValue: fauna-class-lambda-arn
-                ClassName: users
-                KeyParameterSecure: FaunaDevKey
+                    Fn::ImportValue: fauna-collection-lambda-arn
+                CollectionName: users
+                KeyParameterSecure: /fauna/FaunaDevKey
                 Indices:
-                    -
-                        Name: users_by_sub
-                        ID: 1
+                    user-id:
+                        Name: user_by_sub
                         Terms:
                             - field:
-                                - data
-                                - sub
-                    -
-                        Name: users_by_sub
-                        ID: 2
+                                  - data
+                                  - sub
+                        Unique: true
+
+        CubeCollection:
+            Type: Custom::FaunaCollection
+            Properties:
+                ServiceToken:
+                    Fn::ImportValue: fauna-collection-lambda-arn
+
+                CollectionName: cubes
+                KeyParameterSecure: /fauna/FaunaDevKey
+                Indices:
+                    owner:
+                        Name: cubes_by_owner
                         Terms:
                             - field:
-                                - data
-                                - displayName
-                              transform: casefold
+                                  - data
+                                  - owner
+
 
     Outputs:
-        Response:
+        UserResponse:
             Value:
                 Fn::GetAtt:
-                    - FaunaDB
+                    - UserCollection
+                    - Response
+
+        CubeResponse:
+            Value:
+                Fn::GetAtt:
+                    - CubeCollection
                     - Response
