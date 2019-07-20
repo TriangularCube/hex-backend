@@ -34,6 +34,13 @@ resources:
                                   - data
                                   - sub
                         Unique: true
+                    user-display:
+                        Name: user_by_displayName
+                        Terms:
+                            - field:
+                                  - data
+                                  - displayName
+                        Unique: true
 
         CubeCollection:
             Type: Custom::FaunaCollection
