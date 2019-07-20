@@ -1,0 +1,62 @@
+service: faunadb-custom-resource
+
+plugins:
+    - serverless-deployment-bucket
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+    region: us-west-2
+    deploymentBucket:
+        name: hex-deployment-bucket
+        serverSideEncryption: AES256
+
+resources:
+    Resources:
+        # Our custom resource
+        UserCollection:
+            Type: Custom::FaunaCollection
+            Properties:
+                ServiceToken:
+                    Fn::ImportValue: fauna-collection-lambda-arn
+                CollectionName: users
+                KeyParameterSecure: /fauna/FaunaDevKey
+                Indices:
+                    user-id:
+                        Name: user_by_sub
+                        Terms:
+                            - field:
+                                  - data
+                                  - sub
+                        Unique: true
+
+        CubeCollection:
+            Type: Custom::FaunaCollection
+            Properties:
+                ServiceToken:
+                    Fn::ImportValue: fauna-collection-lambda-arn
+
+                CollectionName: cubes
+                KeyParameterSecure: /fauna/FaunaDevKey
+                Indices:
+                    owner:
+                        Name: cubes_by_owner
+                        Terms:
+                            - field:
+                                  - data
+                                  - owner
+
+
+    Outputs:
+        UserResponse:
+            Value:
+                Fn::GetAtt:
+                    - UserCollection
+                    - Response
+
+        CubeResponse:
+            Value:
+                Fn::GetAtt:
+                    - CubeCollection
+                    - Response
