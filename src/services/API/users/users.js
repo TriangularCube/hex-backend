@@ -1,7 +1,4 @@
-'use strict';
-
-// const ssmModule = require( './ssm' ); // Import the SSM module
-// const ssm = new ssmModule( ["FaunaKey"] ); // Spin up a new instance with our list of keys
+'use strict'
 
 const getFaunaKey = require( './faunaSSM' );
 
