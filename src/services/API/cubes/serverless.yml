@@ -1,0 +1,52 @@
+service: hex-api-cubes
+
+plugins:
+    - serverless-deployment-bucket
+    - serverless-package-external
+    - serverless-offline
+    - serverless-plugin-include-dependencies
+    - serverless-plugin-common-excludes
+
+package:
+    # Exclude Dev Dependencies for default Serverless, since plugin is doing it faster
+    excludeDevDependencies: false
+
+custom:
+    # Package External plugin config
+    packageExternal:
+        external:
+            - '../../../util/faunaClient.js'
+            - '../../../util/ssm.js'
+
+    # Our stage is based on what is passed in when running serverless
+    # commands. Or falls back to what we have set in the provider section.
+    stage: ${opt:stage, self:provider.stage}
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+    region: us-west-2
+    deploymentBucket:
+        name: hex-deployment-bucket
+        serverSideEncryption: AES256
+    apiGateway:
+        restApiId:
+            'Fn::ImportValue': ${self:custom.stage}-HexApiGateway-restApiId
+        restApiRootResourceId:
+            'Fn::ImportValue': ${self:custom.stage}-HexApiGateway-rootResourceId
+    environment:
+        STAGE: ${self:custom.stage}
+    iamRoleStatements:
+      # Copy the role statements to avoid errors
+        ${ file( ../../../util/fauna/faunaKeyRole.yml ) }
+
+functions:
+    cubes:
+        handler: cubes.main
+        memorySize: 256
+        events:
+            - http:
+                  path: cubes
+                  method: get
+                  cors: true
