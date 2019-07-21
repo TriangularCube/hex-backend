@@ -25,7 +25,9 @@ module.exports = class SSM {
 
         res.Parameters.map( (element) => {
             this.store[ element.Name ] = element.Value;
-        })
+        });
+
+        this.loadedAt = Date.now();
 
     }
 
