@@ -10,7 +10,7 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
-            - '../../util/fauna/faunaSSM.js'
+            - '../../util/faunaClient.js'
             - '../../util/ssm.js'
 
     stage: ${opt:stage, self:provider.stage}

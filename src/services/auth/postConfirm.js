@@ -1,8 +1,4 @@
-const getFaunaKey = require( './faunaSSM' );
-
-const faunadb = require( 'faunadb' );
-const q = faunadb.query;
-let client;
+let client, q;
 
 module.exports.main = async (event) => {
 
@@ -16,13 +12,7 @@ module.exports.main = async (event) => {
 
     // If there is no DB client already
     if( !client ){
-
-        // Fetch the DB key
-        const dbKey = await getFaunaKey();
-
-        // Create a new client
-        client = new faunadb.Client({ secret: dbKey });
-
+        [client, q] = await require( './faunaClient' )();
     }
 
     // Fetch the user SUB, the unique Cognito User Pool ID

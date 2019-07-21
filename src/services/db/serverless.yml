@@ -27,6 +27,8 @@ resources:
                 CollectionName: users
                 KeyParameterSecure: ${self:custom.key}
                 Indices:
+                    all:
+                        Name: all_users
                     user-id:
                         Name: user_by_sub
                         Terms:
@@ -51,6 +53,15 @@ resources:
                 CollectionName: cubes
                 KeyParameterSecure: ${self:custom.key}
                 Indices:
+                    all:
+                        Name: all_cubes
+                    id:
+                        Name: cube_by_id
+                        Terms:
+                            - field:
+                                  - data
+                                  - id
+                        Unique: true
                     owner:
                         Name: cubes_by_owner
                         Terms:

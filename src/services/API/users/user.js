@@ -1,21 +1,12 @@
 'use strict'
 
-const getFaunaKey = require( './faunaSSM' );
-
-const faunadb = require( 'faunadb' );
-const q = faunadb.query;
-let client;
+let client, q;
 
 
 module.exports.main = async ( event ) => {
 
-    // Make the client
     if( !client ){
-        // Fetch the DB key
-        const dbKey = await getFaunaKey();
-
-        // Create a new client
-        client = new faunadb.Client({ secret: dbKey });
+        [client, q] = await require( './faunaClient' )();
     }
 
     const displayName = event.pathParameters.displayName;

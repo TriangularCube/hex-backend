@@ -5,6 +5,9 @@
     "main": "index.js",
     "author": "Michael Liu",
     "license": "None",
+    "scripts": {
+        "deploy-db": "cd src & ls"
+    },
     "devDependencies": {
         "aws-sdk": "^2.496.0",
         "serverless": "^1.48.2",
