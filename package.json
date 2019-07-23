@@ -6,11 +6,11 @@
     "author": "Michael Liu",
     "license": "None",
     "scripts": {
-        "deploy-db": "cd src & ls"
+        "deploy-db": "cd src/services/db && sls deploy"
     },
     "devDependencies": {
-        "aws-sdk": "^2.496.0",
-        "serverless": "^1.48.2",
+        "aws-sdk": "^2.498.0",
+        "serverless": "^1.48.3",
         "serverless-deployment-bucket": "^1.1.0",
         "serverless-offline": "^5.8.0",
         "serverless-package-external": "^1.1.1",
