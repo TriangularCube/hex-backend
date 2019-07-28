@@ -84,6 +84,16 @@ resources:
                     Ref: HexUserPool
                 GenerateSecret: false
 
+        HexMobileAppClient:
+            Type: AWS::Cognito::UserPoolClient
+            Properties:
+                # Generate an App Client Name based on stage
+                ClientName: hex-${self:custom.stage}-mobile-app-client
+                UserPoolId:
+                    Ref: HexUserPool
+                GenerateSecret: false
+                RefreshTokenValidity: 3650
+
         UserPoolPostConfirmPermission:
             Type: AWS::Lambda::Permission
             Properties:
