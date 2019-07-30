@@ -53,6 +53,8 @@ resources:
                 CollectionName: cubes
                 KeyParameterSecure: ${self:custom.key}
                 Indices:
+                    # This is purely for the web client so I can keep an eye on things
+                    # Should delete for production
                     all:
                         Name: all_cubes
                     id:
@@ -68,6 +70,13 @@ resources:
                             - field:
                                   - data
                                   - owner
+                        Values:
+                            - field:
+                                  - data
+                                  - name
+                            - field:
+                                  - data
+                                  - id
 
 
     Outputs:

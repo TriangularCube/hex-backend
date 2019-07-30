@@ -39,7 +39,7 @@ provider:
         STAGE: ${self:custom.stage}
     iamRoleStatements:
       # Copy the role statements to avoid errors
-        ${ file( ../../../util/fauna/faunaKeyRole.yml ) }
+        ${ file( ../../../util/faunaKeyRole.yml ) }
 
 functions:
     cubes:
@@ -48,5 +48,17 @@ functions:
         events:
             - http:
                   path: cubes
+                  method: get
+                  cors: true
+            - http:
+                  path: cubes/{user}
+                  method: get
+                  cors: true
+    cube:
+        handler: cube.main
+        memorySize: 256
+        events:
+            - http:
+                  path: cube/{id}
                   method: get
                   cors: true

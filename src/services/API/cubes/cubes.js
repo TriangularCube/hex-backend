@@ -6,6 +6,8 @@ module.exports.main = async ( event ) => {
         [client, q] = await require( './faunaClient' )();
     }
 
+    const userParam = event.pathParameters && event.pathParameters.user ? event.pathParameters.user : null;
+
     let result;
 
     try{
@@ -14,7 +16,8 @@ module.exports.main = async ( event ) => {
 
             q.Paginate(
                 q.Match(
-                    q.Index( 'all_cubes' )
+                    q.Index( userParam === null ? 'all_cubes' : 'cubes_by_owner' ),
+                    userParam
                 )
             )
 

@@ -40,7 +40,7 @@ provider:
         STAGE: ${self:custom.stage}
     iamRoleStatements:
         # Copy the role statements to avoid errors
-        ${ file( ../../../util/fauna/faunaKeyRole.yml ) }
+        ${ file( ../../../util/faunaKeyRole.yml ) }
 
 functions:
     users:

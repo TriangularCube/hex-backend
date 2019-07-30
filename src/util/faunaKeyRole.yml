@@ -5,4 +5,5 @@
 -   Effect: 'Allow'
     Action: 'kms:Decrypt'
     Resource:
+        # TODO Look into properly setting a key
         - 'arn:aws:kms:us-west-2:852768116392:key/a7bb10cf-bbb2-41bc-824d-561c4545dd88'

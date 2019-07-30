@@ -6,7 +6,7 @@
     "author": "Michael Liu",
     "license": "None",
     "scripts": {
-        "deploy-db": "cd src/services/db && sls deploy"
+        "deploy-db": "cd src/services/db && sls deploy -v"
     },
     "devDependencies": {
         "aws-sdk": "^2.498.0",
