@@ -1,4 +1,4 @@
-service: hex-api-cubes
+service: hex-api-my-cubes
 
 plugins:
     - serverless-deployment-bucket
@@ -41,28 +41,26 @@ provider:
       # Copy the role statements to avoid errors
         ${ file( ../../../util/faunaKeyRole.yml ) }
 
+
 functions:
-    cubes:
-        handler: cubes.main
+    myCubes:
+        handler: myCubes.main
+        memorySize: 256
+        events:
+              - http:
+                  path: myCubes
+                  method: get
+                  cors: true
+
+    newCube:
+        handler: newCube.main
         memorySize: 256
         events:
             - http:
-                  path: cubes/{user}
-                  method: get
+                  path: newCube
+                  method: post
                   cors: true
-                  request:
-                      parameters:
-                          paths:
-                              user: false
-#            - http:
-#                  path: cubes/{user}
-#                  method: get
-#                  cors: true
-    cube:
-        handler: cube.main
-        memorySize: 256
-        events:
-            - http:
-                  path: cube/{id}
-                  method: get
-                  cors: true
+                  authorizer:
+                      name: myCubesAuthorizer
+                      arn:
+                          Fn::ImportValue: ${self:custom.stage}-authorizer

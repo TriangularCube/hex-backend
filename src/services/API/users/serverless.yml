@@ -64,6 +64,6 @@ functions:
                         paths:
                             displayName: true
                 authorizer:
-                    name: CustomAuthorizer
+                    name: userAuthorizer
                     arn:
                         Fn::ImportValue: ${self:custom.stage}-authorizer
