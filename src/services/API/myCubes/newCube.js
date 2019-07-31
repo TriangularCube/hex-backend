@@ -21,7 +21,8 @@ module.exports.main = async ( event ) => {
                     q.Collection( 'cubes' ),
                     {
                         data: {
-                            id: 'Some-New-Name',
+                            id: q.NewId(),
+                            name: 'New Cube',
                             owner: q.Var( 'user' )
                         }
                     }
@@ -32,7 +33,7 @@ module.exports.main = async ( event ) => {
     } catch( e ){
 
         console.error( e.message );
-        console.error( "Error creating cube" );
+        console.error( "Error fetching cube" );
         result = e;
 
     }
