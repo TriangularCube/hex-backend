@@ -1,3 +1,4 @@
+const idGen = require( 'simple-human-ids' );
 let client, q;
 
 module.exports.main = async ( event ) => {
@@ -27,10 +28,10 @@ module.exports.main = async ( event ) => {
     // HACK Use test results for now
     result = [
         {
-            name: 'Lightning Bolt'
+            name: idGen.new()
         },
         {
-            name: 'Giant Growth'
+            name: idGen.new()
         }
     ];
 

@@ -1,4 +1,4 @@
-// const idGen = require( 'simple-human-ids' );
+const idGen = require( 'simple-human-ids' );
 
 let client, q;
 
@@ -21,8 +21,8 @@ module.exports.main = async ( event ) => {
                     q.Collection( 'cubes' ),
                     {
                         data: {
-                            id: q.NewId(),
-                            name: 'New Cube',
+                            id: idGen.new(),
+                            name: idGen.new(),
                             owner: q.Var( 'user' )
                         }
                     }
