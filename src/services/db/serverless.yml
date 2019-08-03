@@ -30,11 +30,14 @@ resources:
                     all:
                         Name: all_users
                     user-id:
-                        Name: user_by_sub
+                        Name: user_ref_by_sub
                         Terms:
                             - field:
                                   - data
                                   - sub
+                        Values:
+                            - field:
+                                  - ref
                         Unique: true
                     user-display:
                         Name: user_by_displayName

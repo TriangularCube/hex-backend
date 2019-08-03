@@ -94,6 +94,18 @@ resources:
                 GenerateSecret: false
                 RefreshTokenValidity: 3650
 
+        HexPostmanAppClient:
+            Type: AWS::Cognito::UserPoolClient
+            Properties:
+                # Generate an App Client Name based on stage
+                ClientName: hex-${self:custom.stage}-postman-app-client
+                UserPoolId:
+                    Ref: HexUserPool
+                GenerateSecret: false
+                RefreshTokenValidity: 3650
+                ExplicitAuthFlows:
+                    - USER_PASSWORD_AUTH
+
         UserPoolPostConfirmPermission:
             Type: AWS::Lambda::Permission
             Properties:

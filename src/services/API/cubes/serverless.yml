@@ -47,17 +47,18 @@ functions:
         memorySize: 256
         events:
             - http:
-                  path: cubes/{user}
-                  method: get
-                  cors: true
-                  request:
-                      parameters:
-                          paths:
-                              user: false
-#            - http:
-#                  path: cubes/{user}
-#                  method: get
-#                  cors: true
+                path: cubes/{user}
+                method: get
+                cors: true
+                request:
+                    parameters:
+                        paths:
+                            user: false
+                authorizer:
+                    name: cubesAuthorizer
+                    arn:
+                        Fn::ImportValue: ${self:custom.stage}-authorizer
+#
     cube:
         handler: cube.main
         memorySize: 256
@@ -66,3 +67,11 @@ functions:
                   path: cube/{id}
                   method: get
                   cors: true
+                  request:
+                      parameters:
+                          paths:
+                              id: true
+                  authorizer:
+                      name: cubeAuthorizer
+                      arn:
+                          Fn::ImportValue: ${self:custom.stage}-authorizer
