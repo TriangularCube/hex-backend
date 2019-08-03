@@ -4,8 +4,9 @@
     "description": "Backend for Hexahedron.io",
     "main": "index.js",
     "author": "Michael Liu",
-    "license": "None",
+    "license": "MIT",
     "scripts": {
+        "offline-id": "cd $INIT_CWD && AUTHORIZER='{\"principalId\":\"9f1715b8-f745-46a7-bca8-80a4e503b3f5\"}' sls offline start",
         "deploy-db": "cd src/services/db && sls deploy -v"
     },
     "devDependencies": {
@@ -18,6 +19,7 @@
         "serverless-plugin-include-dependencies": "^3.2.1"
     },
     "dependencies": {
+        "ajv": "^6.10.2",
         "faunadb": "^2.7.0",
         "node-fetch": "^2.6.0",
         "node-jose": "^1.1.3",
