@@ -13,7 +13,7 @@ provider:
     stage: dev
     region: us-west-2
     deploymentBucket:
-        name: hex-deployment-bucket
+        name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
 
 resources:

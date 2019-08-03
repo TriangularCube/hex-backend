@@ -28,7 +28,7 @@ provider:
     stage: dev
     region: us-west-2
     deploymentBucket:
-        name: hex-deployment-bucket
+        name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
     apiGateway:
         restApiId:
@@ -39,7 +39,7 @@ provider:
         STAGE: ${self:custom.stage}
     iamRoleStatements:
       # Copy the role statements to avoid errors
-        ${ file( ../../../util/faunaKeyRole.yml ) }
+        ${ file( ../../../common-config/faunaKeyRole.yml ) }
 
 functions:
     cubes:
