@@ -14,7 +14,7 @@ module.exports.main = async ( event ) => {
             q.Paginate(
                 q.Join(
                     q.Match(
-                        q.Index( 'user_by_sub' ),
+                        q.Index( 'user_ref_by_sub' ),
                         event.requestContext.authorizer.principalId
                     ),
                     q.Index( 'cubes_by_owner' )

@@ -61,7 +61,7 @@ module.exports.main = async ( event ) => {
                         data: {
                             id: generatedID,
                             name: data.name,
-                            owner: q.Get( q.Match( q.Index( 'user_ref_by_sub' ), userSub ) ),
+                            owner: q.Select( 'ref', q.Get( q.Match( q.Index( 'user_ref_by_sub' ), userSub ) ) ),
                             private: true
                         }
                     }
@@ -73,7 +73,8 @@ module.exports.main = async ( event ) => {
             foundUniqueID = true;
 
         } catch (e) {
-            // Do nothing here, and keep searching for a name that works
+            console.log( `${generatedID} is a duplicate` );
+            // Do nothing else here, and keep searching for a name that works
         }
 
     } while( !foundUniqueID );
