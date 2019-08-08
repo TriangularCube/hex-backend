@@ -1,4 +1,4 @@
-service: hex-api-my-cubes
+service: hex-api-me
 
 plugins:
     - serverless-deployment-bucket

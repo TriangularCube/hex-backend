@@ -44,7 +44,7 @@ provider:
 
 functions:
     users:
-        handler: users.main
+        handler: allUsers.main
         memorySize: 256
         events:
             - http:
@@ -53,7 +53,7 @@ functions:
                   cors: true
 
     user:
-        handler: user.main
+        handler: singleUser.main
         events:
             - http:
                 path: user/{displayName}

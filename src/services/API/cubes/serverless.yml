@@ -43,7 +43,7 @@ provider:
 
 functions:
     cubes:
-        handler: cubes.main
+        handler: allCubes.main
         memorySize: 256
         events:
             - http:
@@ -60,7 +60,7 @@ functions:
                         Fn::ImportValue: ${self:custom.stage}-authorizer
 #
     cube:
-        handler: cube.main
+        handler: singleCube.main
         memorySize: 256
         events:
             - http:
