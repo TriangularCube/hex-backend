@@ -1,0 +1,34 @@
+service: faunadb-graphql-resource
+
+plugins:
+    - serverless-deployment-bucket
+
+custom:
+    stage: ${opt:stage, self:provider.stage}
+    key: /fauna/FaunaKey-${self:custom.stage}
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+    region: us-west-2
+    deploymentBucket:
+        name: hex-deployment-bucket-${self:custom.stage}
+        serverSideEncryption: AES256
+
+resources:
+    Resources:
+        FaunaGraphQL:
+            Type: Custom::FaunaGraphQL
+            Properties:
+                ServiceToken:
+                    Fn::ImportValue: fauna-graphql-lambda-arn
+                Key: "fnADVT2hJaACAq5qT2FgqONdesXvVkjL41lFnjCw:"
+                Schema: >-
+                    ${ file( ./schema.graphql ) }
+    Outputs:
+        Response:
+            Value:
+                Fn::GetAtt:
+                    - FaunaGraphQL
+                    - Response

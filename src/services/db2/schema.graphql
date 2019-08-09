@@ -1,0 +1,21 @@
+type User {
+    sub: String! @unique
+    displayName: String! @unique
+    cubes: [Cube] @relation
+}
+
+type Card @embedded {
+    cardId: String!
+}
+
+type Cube {
+    id: String! @unique
+    name: String!
+    cards: [Card!]
+    owner: User! @relation
+}
+
+type Query {
+    allUsers: [User!]!
+    allCubes: [Cube!]!
+}
