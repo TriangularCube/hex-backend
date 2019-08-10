@@ -10,7 +10,7 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
-            - '../../util/faunaClient.js'
+            - '../../util/faunaGraphqlQuery.js'
             - '../../util/ssm.js'
 
     stage: ${opt:stage, self:provider.stage}
@@ -33,6 +33,12 @@ provider:
         ${ file( ../../util/fauna/faunaKeyRole.yml ) }
 
 functions:
+    preSignup:
+        handler: preSignup.main
+        memorySize: 256
+        environment:
+            STAGE: ${self:custom.stage}
+
     postConfirm:
         handler: postConfirm.main
         memorySize: 256
@@ -70,6 +76,10 @@ resources:
                         RequireUppercase: false
 
                 LambdaConfig:
+                    PreSignUp:
+                        Fn::GetAtt:
+                            - PreSignupLambdaFunction
+                            - Arn
                     PostConfirmation:
                         Fn::GetAtt:
                             - PostConfirmLambdaFunction
