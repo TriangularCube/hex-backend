@@ -11,7 +11,7 @@
     },
     "devDependencies": {
         "aws-sdk": "^2.503.0",
-        "serverless": "^1.49.0",
+        "serverless": "^1.50.0",
         "serverless-deployment-bucket": "^1.1.0",
         "serverless-offline": "^5.8.0",
         "serverless-package-external": "^1.1.1",
@@ -20,7 +20,6 @@
     },
     "dependencies": {
         "ajv": "^6.10.2",
-        "btoa": "^1.2.1",
         "faunadb": "^2.7.0",
         "node-fetch": "^2.6.0",
         "node-jose": "^1.1.3",

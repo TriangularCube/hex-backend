@@ -7,7 +7,7 @@ type User {
 }
 
 enum Usertype{
-    free, patron
+    FREE, PATRON
 }
 
 type Card @embedded {
@@ -24,7 +24,8 @@ type Cube {
 type Query {
     allUsers: [User!]!
     allCubes: [Cube!]!
-    findUserByDisplayname( displayName: String! ): User!
+    findUserByDisplayname( displayName: String! ): User
+    findUserBySub( sub: String! ): User
 }
 
 #type Mutation {
