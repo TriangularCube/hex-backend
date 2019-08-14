@@ -1,7 +1,13 @@
 type User {
-    sub: String! @unique
+    sub: String @unique
     displayName: String! @unique
     cubes: [Cube] @relation
+    type: Usertype! # TODO Change this to Enum at some point
+    active: Boolean!
+}
+
+enum Usertype{
+    free, patron
 }
 
 type Card @embedded {
@@ -18,4 +24,10 @@ type Cube {
 type Query {
     allUsers: [User!]!
     allCubes: [Cube!]!
+    findUserByDisplayname( displayName: String! ): User!
 }
+
+#type Mutation {
+#    changeUserByDisplayname( displayName: String!, sub: String! ): User! @resolver(name: "update_sub_by_displayname", paginated: false)
+#    changeSomething( displayName: String! ) : User! @resolver( name: "changeSomething", paginated: false )
+#}

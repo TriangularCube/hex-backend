@@ -10,6 +10,7 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
+            - '../../util/faunaClient.js'
             - '../../util/faunaGraphqlQuery.js'
             - '../../util/ssm.js'
 
@@ -30,7 +31,7 @@ provider:
 
     iamRoleStatements:
         # Copy the role statement from file to avoid errors
-        ${ file( ../../util/fauna/faunaKeyRole.yml ) }
+        ${ file( ../../common-config/faunaKeyRole.yml ) }
 
 functions:
     preSignup:
@@ -62,6 +63,11 @@ resources:
 
                 Schema:
                     - Name: email
+                      AttributeDataType: String
+                      Mutable: true
+                      Required: true
+
+                    - Name: name
                       AttributeDataType: String
                       Mutable: true
                       Required: true
@@ -123,6 +129,20 @@ resources:
                 FunctionName:
                     Fn::GetAtt:
                         - PostConfirmLambdaFunction
+                        - Arn
+                Principal: cognito-idp.amazonaws.com
+                SourceArn:
+                    Fn::GetAtt:
+                        - HexUserPool
+                        - Arn
+
+        UserPoolPreSignupPermission:
+            Type: AWS::Lambda::Permission
+            Properties:
+                Action: lambda:InvokeFunction
+                FunctionName:
+                    Fn::GetAtt:
+                        - PreSignupLambdaFunction
                         - Arn
                 Principal: cognito-idp.amazonaws.com
                 SourceArn:

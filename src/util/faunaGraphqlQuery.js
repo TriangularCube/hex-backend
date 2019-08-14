@@ -7,16 +7,18 @@ const btoa = require( 'btoa' );
 
 module.exports = async ( query ) => {
 
-    const key = await ssm.getParam( faunaKeyName );
+    let key = await ssm.getParam( faunaKeyName );
+    key = key + ':';
 
     const res = await fetch( 'https://graphql.fauna.com/graphql', {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + btoa( key )
         },
-        body: {
+        // MUST STRINGIFY BODY, THIS IS IN GRAPHQL SPECS
+        body: JSON.stringify( {
             query: query
-        }
+        } )
     });
 
     return await res.json();
