@@ -16,8 +16,6 @@ module.exports = async () => {
         client = new faunadb.Client({ secret: key });
     }
 
-    return [
-        client, q
-    ]
+    return [ client, q ];
 
 };
