@@ -46,60 +46,74 @@ module.exports.main = async ( event ) => {
         });
     }
 
-    // Fetch the User's Ref
-    const res = await faunaQuery(`
-        query GetUserID{
-            findUserBySub(
-                sub: "${ userSub }"
-            ){
-                _id
-            }
-        }
-    `);
 
-    const user = res.data.findUserBySub;
-    if( user === null ){
-        GenerateResponse( false,{
-            error: 'No user by this sub. THIS SHOULD NOT HAVE HAPPENED'
-        })
-    }
+    try {
 
-
-    let generatedID, foundUniqueID = false;
-
-    do {
-
-        generatedID = idGen.new();
-
-        // Try to generate a name that has not yet been used
+        // Fetch the User's Ref
         const res = await faunaQuery(`
-            mutation MakeNewCube{
-                createCube(
-                    data: {
-                        handle: "${ generatedID }"
-                        name: "${ data.name }"
-                        owner: {
-                            connect: "${ user._id }"
-                        }
-                    }
-                ) {
-
-                    handle
-
+            query GetUserID{
+                findUserBySub(
+                    sub: "${userSub}"
+                ){
+                    _id
                 }
             }
         `);
 
-        if( !res.errors ){
-            foundUniqueID = true;
+        const user = res.data.findUserBySub;
+        if (user === null) {
+            GenerateResponse(false, {
+                error: 'No user by this sub. THIS SHOULD NOT HAVE HAPPENED'
+            })
         }
 
-    } while( !foundUniqueID );
+
+        let generatedID, foundUniqueID = false;
+
+        do {
+
+            generatedID = idGen.new();
+
+            // Try to generate a name that has not yet been used
+            const res = await faunaQuery(`
+                mutation MakeNewCube{
+                    createCube(
+                        data: {
+                            handle: "${generatedID}"
+                            name: "${data.name}"
+                            owner: {
+                                connect: "${user._id}"
+                            }
+                        }
+                    ) {
+    
+                        handle
+    
+                    }
+                }
+            `);
+
+            if (!res.errors) {
+                foundUniqueID = true;
+            }
+
+        } while (!foundUniqueID);
 
 
-    return GenerateResponse( true, {
-        handle: generatedID
-    });
+        // Finally return the response that creation was successful
+        return GenerateResponse( true, {
+            handle: generatedID
+        });
+
+    } catch ( e ) {
+
+        // Catch all errors in Fetch
+        return GenerateResponse( false, {
+            error: 'Fetch error',
+            errorMessage: e.message
+        });
+
+    }
 
 };
 
