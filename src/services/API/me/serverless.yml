@@ -15,6 +15,7 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
+            - '../../../util/faunaGraphqlQuery.js'
             - '../../../util/faunaClient.js'
             - '../../../util/ssm.js'
 

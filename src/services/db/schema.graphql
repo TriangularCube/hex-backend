@@ -2,7 +2,7 @@ type User {
     sub: String @unique
     displayName: String! @unique
     cubes: [Cube] @relation
-    type: Usertype! # TODO Change this to Enum at some point
+    type: Usertype!
     active: Boolean!
 }
 
@@ -10,21 +10,21 @@ enum Usertype{
     FREE, PATRON
 }
 
-type Card @embedded {
-    cardId: String!
-}
-
 type Cube {
-    id: String! @unique
+    handle: String! @unique
     name: String!
     cards: [Card!]
     owner: User! @relation
 }
 
+type Card @embedded {
+    cardId: String!
+}
+
 type Query {
     allUsers: [User!]!
     allCubes: [Cube!]!
-    findUserByDisplayname( displayName: String! ): User
+    findUserByDisplayName( displayName: String! ): User
     findUserBySub( sub: String! ): User
 }
 

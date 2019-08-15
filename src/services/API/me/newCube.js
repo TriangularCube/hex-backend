@@ -1,11 +1,26 @@
 const idGen = require( 'simple-human-ids' );
 
-let client, q;
+// let client, q;
+const faunaQuery = require( './faunaGraphqlQuery' );
 
-// TODO Use AJV
 const ajvImport = require( 'ajv' );
 const ajv = new ajvImport({ allErrors: true });
-const schema = require( './newCubeSchema' );
+const schema = {
+
+    type: 'object',
+    required: [ 'name' ],
+    properties: {
+
+        name: {
+
+            type: 'string'
+
+        }
+
+    },
+    additionalProperties: false
+
+};
 const validate = ajv.compile( schema );
 
 
@@ -16,105 +31,84 @@ module.exports.main = async ( event ) => {
 
     // Reject unauthenticated users
     if( userSub === 'none' ){
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                success: false,
-                error: 'Unauthenticated users cannot create cubes'
-            }, null, 2),
-        };
+        return GenerateResponse( false,{
+            error: 'Unauthenticated users cannot create cubes'
+        });
     }
 
     const data = JSON.parse( event.body );
 
     // Reject badly formed JSON
     if( !validate( data ) ){
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                success: false,
-                error: 'Invalid JSON data',
-                errorMessage: validate.errors
-            })
+        return GenerateResponse( false,{
+            error: 'Invalid JSON data',
+            errorMessage: validate.errors
+        });
+    }
+
+    // Fetch the User's Ref
+    const res = await faunaQuery(`
+        query GetUserID{
+            findUserBySub(
+                sub: "${ userSub }"
+            ){
+                _id
+            }
         }
+    `);
+
+    const user = res.data.findUserBySub;
+    if( user === null ){
+        GenerateResponse( false,{
+            error: 'No user by this sub. THIS SHOULD NOT HAVE HAPPENED'
+        })
     }
 
-    // Load the fauna client
-    if( !client ){
-        [client, q] = await require( './faunaClient' )();
-    }
 
-
-    let generatedID, foundUniqueID = false, result;
+    let generatedID, foundUniqueID = false;
 
     do {
 
         generatedID = idGen.new();
 
         // Try to generate a name that has not yet been used
-        try {
-
-            let res = await client.query(
-                q.Create(
-                    q.Collection( 'cubes' ),
-                    {
-                        data: {
-                            id: generatedID,
-                            name: data.name,
-                            owner: q.Select( 'ref', q.Get( q.Match( q.Index( 'user_ref_by_sub' ), userSub ) ) ),
-                            private: true
+        const res = await faunaQuery(`
+            mutation MakeNewCube{
+                createCube(
+                    data: {
+                        handle: "${ generatedID }"
+                        name: "${ data.name }"
+                        owner: {
+                            connect: "${ user._id }"
                         }
                     }
-                )
-            );
+                ) {
 
-            // FIXME Not really sure this is needed
-            result = res;
+                    handle
+
+                }
+            }
+        `);
+
+        if( !res.errors ){
             foundUniqueID = true;
-
-        } catch (e) {
-            console.log( `${generatedID} is a duplicate` );
-            // Do nothing else here, and keep searching for a name that works
         }
 
     } while( !foundUniqueID );
 
 
-    // let result;
-    // try{
-    //
-    //     result = await client.query(
-    //         q.Let(
-    //             {
-    //                 user: q.Select( 'ref', q.Get( q.Match( q.Index( 'user_by_sub' ), userSub ) ) )
-    //             },
-    //             q.Create(
-    //                 q.Collection( 'cubes' ),
-    //                 {
-    //                     data: {
-    //                         id: idGen.new(),
-    //                         name: idGen.new(),
-    //                         owner: q.Var( 'user' )
-    //                     }
-    //                 }
-    //             )
-    //         )
-    //     )
-    //
-    // } catch( e ){
-    //
-    //     console.error( e.message );
-    //     console.error( "Error creating cube" );
-    //     result = e;
-    //
-    // }
+    return GenerateResponse( true, {
+        handle: generatedID
+    });
 
+};
+
+function GenerateResponse( success, data ) {
     return {
         statusCode: 200,
         body: JSON.stringify({
-            success: true,
-            result // FIXME Don't really need this, just in here for debug purposes
+            success,
+            ...data
         }, null, 2),
     };
-
-};
+}
