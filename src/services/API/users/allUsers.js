@@ -1,50 +1,59 @@
-let client, q;
+let faunaQuery = require( './faunaGraphqlQuery' );
 
 module.exports.main = async ( event ) => {
 
-    if( !client ){
-        [client, q] = await require( './faunaClient' )();
+    let size = 20;
+    if( event.queryStringParameters && event.queryStringParameters.size ){
+        size = event.queryStringParameters.size;
     }
 
-    let result;
+    // Default false message
+    let response = {
+        success: false
+    };
 
     try{
 
-        result = await client.query(
-            q.Paginate(
-                q.Match(
-                    q.Index( "all_users")
-                ),
-                {
-                    size: 1
+        const result = await faunaQuery(`
+            query GetAllUsers{
+                allUsers( _size: ${size} ){
+                    data{
+                        _id
+                        displayName
+                        cubes{
+                            data{
+                                _id
+                            }
+                        }
+                    }
+                    before
+                    after
                 }
-            )
-        );
+            }
+        `);
 
-        console.log( result );
+        // TODO deal with public/private profiles
 
-        console.log( result.hasOwnProperty( 'after' ) );
-
-        console.log( result.after[0].id );
+        response.success = true;
+        response.users = result;
 
     } catch( e ){
         console.error( e.message );
         console.error( "Error getting list of users" );
-        result = 'None';
+
+        response.success = false;
+        response = null;
     }
 
-    const headers = {
-        "Access-Control-Allow-Origin": "*"
-    };
+    // const headers = {
+    //     "Access-Control-Allow-Origin": "*"
+    // };
 
     // TODO Change this into an actual result
     return {
         statusCode: 200,
         // headers: headers,
-        body: JSON.stringify({
-            message: 'The result is in',
-            result: result
-        }, null, 2),
+        body: JSON.stringify({ response }, null, 2)
     };
 
 };
