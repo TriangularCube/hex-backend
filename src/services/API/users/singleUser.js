@@ -1,46 +1,38 @@
-let client, q;
+const faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require ( './GenerateResponse' );
 
 
 module.exports.main = async ( event ) => {
 
-    if( !client ){
-        [client, q] = await require( './faunaClient' )();
-    }
-
     const displayName = event.pathParameters.displayName;
-
-    let result;
 
     try{
 
-        result = await client.query(
-            q.Get(
-                q.Match(
-                    q.Index( "user_by_displayName"),
+        const result = await faunaQuery(`
+            query GetUser{
+                findUserByDisplayName( displayName: "${displayName}" ){
+                    _id
                     displayName
-                )
-            )
-        );
+                    type
+                    cubes{
+                        data{
+                            _id
+                            name
+                        }
+                    }
+                }
+            }
+        `);
+
+        // TODO deal with public/private profiles
+
+        return GenerateResponse( true, {
+            user: result.data.findUserByDisplayName
+        });
+
 
     } catch( e ){
-        console.error( e.message );
-        console.error( "Error was for display name: " + displayName );
-        result = 'None';
+        return GenerateResponse.fetchError( e );
     }
-
-
-    const headers = {
-        "Access-Control-Allow-Origin": "*"
-    };
-
-    // TODO Change this into an actual result
-    return {
-        statusCode: 200,
-        headers: headers,
-        body: JSON.stringify({
-            message: 'The result is in',
-            result: result
-        }, null, 2),
-    };
 
 };

@@ -1,0 +1,36 @@
+type User {
+    sub: String @unique
+    displayName: String! @unique
+    cubes: [Cube] @relation
+    type: Usertype!
+    active: Boolean!
+}
+
+enum Usertype{
+    FREE, PATRON
+}
+
+type Cube {
+    handle: String! @unique
+    name: String!
+    cards: [Card!]
+    owner: User! @relation
+}
+
+type Card @embedded {
+    cardId: String!
+}
+
+type Query {
+    allUsers: [User!]!
+    findUserByDisplayName( displayName: String! ): User
+    findUserBySub( sub: String! ): User
+
+    allCubes: [Cube!]!
+    findCubeByHandle( handle: String! ): Cube
+}
+
+#type Mutation {
+#    changeUserByDisplayname( displayName: String!, sub: String! ): User! @resolver(name: "update_sub_by_displayname", paginated: false)
+#    changeSomething( displayName: String! ) : User! @resolver( name: "changeSomething", paginated: false )
+#}

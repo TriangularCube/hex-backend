@@ -1,4 +1,4 @@
-service: faunadb-custom-resource
+service: faunadb-graphql-resource
 
 plugins:
     - serverless-deployment-bucket
@@ -17,80 +17,20 @@ provider:
         serverSideEncryption: AES256
 
 resources:
+    Description: The Serverless template for deploying FaunaDB's GraphQL backed DB Schema
+
     Resources:
-        # Our custom resource
-        UserCollection:
-            Type: Custom::FaunaCollection
+        FaunaGraphQL:
+            Type: Custom::FaunaGraphQL
             Properties:
                 ServiceToken:
-                    Fn::ImportValue: fauna-collection-lambda-arn
-                CollectionName: users
-                KeyParameterSecure: ${self:custom.key}
-                Indices:
-                    all:
-                        Name: all_users
-                    user-id:
-                        Name: user_ref_by_sub
-                        Terms:
-                            - field:
-                                  - data
-                                  - sub
-                        Values:
-                            - field:
-                                  - ref
-                        Unique: true
-                    user-display:
-                        Name: user_by_displayName
-                        Terms:
-                            - field:
-                                  - data
-                                  - displayName
-                        Unique: true
-
-        CubeCollection:
-            Type: Custom::FaunaCollection
-            Properties:
-                ServiceToken:
-                    Fn::ImportValue: fauna-collection-lambda-arn
-
-                CollectionName: cubes
-                KeyParameterSecure: ${self:custom.key}
-                Indices:
-                    # This is purely for the web client so I can keep an eye on things
-                    # Should delete for production
-                    all:
-                        Name: all_cubes
-                    id:
-                        Name: cube_by_id
-                        Terms:
-                            - field:
-                                  - data
-                                  - id
-                        Unique: true
-                    owner:
-                        Name: cubes_by_owner
-                        Terms:
-                            - field:
-                                  - data
-                                  - owner
-                        Values:
-                            - field:
-                                  - data
-                                  - name
-                            - field:
-                                  - data
-                                  - id
-
-
+                    Fn::ImportValue: fauna-graphql-lambda-arn
+                KeyParameterSecure: /fauna/FaunaKey-${self:custom.stage}
+                Schema: >-
+                    ${ file( ./schema.graphql ) }
     Outputs:
-        UserResponse:
+        Response:
             Value:
                 Fn::GetAtt:
-                    - UserCollection
-                    - Response
-
-        CubeResponse:
-            Value:
-                Fn::GetAtt:
-                    - CubeCollection
+                    - FaunaGraphQL
                     - Response

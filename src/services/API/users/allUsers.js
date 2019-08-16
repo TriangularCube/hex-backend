@@ -1,50 +1,43 @@
-let client, q;
+let faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require ( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
 
-    if( !client ){
-        [client, q] = await require( './faunaClient' )();
+    let size = 20;
+    if( event.queryStringParameters && event.queryStringParameters.size ){
+        size = event.queryStringParameters.size;
     }
-
-    let result;
 
     try{
 
-        result = await client.query(
-            q.Paginate(
-                q.Match(
-                    q.Index( "all_users")
-                ),
-                {
-                    size: 1
+        const result = await faunaQuery(`
+            query GetAllUsers{
+                allUsers( _size: ${size} ){
+                    data{
+                        _id
+                        displayName
+                        cubes{
+                            data{
+                                _id
+                            }
+                        }
+                    }
+                    before
+                    after
                 }
-            )
-        );
+            }
+        `);
 
-        console.log( result );
+        // TODO deal with public/private profiles
 
-        console.log( result.hasOwnProperty( 'after' ) );
-
-        console.log( result.after[0].id );
+        return GenerateResponse( true, {
+            users: result.data.allUsers.data,
+            before: result.data.allUsers.before,
+            after: result.data.allUsers.after
+        });
 
     } catch( e ){
-        console.error( e.message );
-        console.error( "Error getting list of users" );
-        result = 'None';
+        return GenerateResponse.fetchError( e );
     }
-
-    const headers = {
-        "Access-Control-Allow-Origin": "*"
-    };
-
-    // TODO Change this into an actual result
-    return {
-        statusCode: 200,
-        // headers: headers,
-        body: JSON.stringify({
-            message: 'The result is in',
-            result: result
-        }, null, 2),
-    };
 
 };

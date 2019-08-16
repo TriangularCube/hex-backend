@@ -1,55 +1,42 @@
-let client, q;
+const faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
 
     // Reject if not logged in
     if( event.requestContext.authorizer.principalId === 'none' ){
-        return {
-            statusCode: 401,
-            // headers: headers,
-            body: JSON.stringify({
-                error: 'User not logged in'
-            }, null, 2),
-        };
+        return GenerateResponse( false, {
+            error: 'User not logged in'
+        });
     }
 
-    if( !client ){
-        [client, q] = await require( './faunaClient' )();
-    }
-
-    let result;
+    const userSub = event.requestContext.authorizer.principalId;
 
     try{
 
-        result = await client.query(
-            q.Paginate(
-                q.Join(
-                    q.Match(
-                        q.Index( 'user_ref_by_sub' ),
-                        event.requestContext.authorizer.principalId
-                    ),
-                    q.Index( 'cubes_by_owner' )
-                )
-            )
-        );
+        const res = await faunaQuery(`
+            query GetMyCubes{
+                findUserBySub( sub: "${ userSub }" ){
+                    cubes {
+                        data {
+                            _id
+                            handle
+                            name
+                        }
+                    }
+                }
+            }
+        `);
 
-        console.log( result );
+        return GenerateResponse( true, {
+            cubes: res.data.findUserBySub.cubes.data
+        });
 
     } catch( e ){
 
-        console.error( e.message );
-        console.error( "Error fetching cube" );
-        result = e;
+        // Catch Fetch errors
+        return GenerateResponse.fetchError( e );
 
     }
-
-    // TODO Change this into an actual result
-    return {
-        statusCode: 200,
-        // headers: headers,
-        body: JSON.stringify({
-            cubes: result.data
-        }, null, 2),
-    };
 
 };

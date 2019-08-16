@@ -16,7 +16,8 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
-            - '../../../util/faunaClient.js'
+            - '../../../util/GenerateResponse.js'
+            - '../../../util/faunaGraphqlQuery.js'
             - '../../../util/ssm.js'
 
     # Our stage is based on what is passed in when running serverless
@@ -47,10 +48,24 @@ functions:
         handler: allUsers.main
         memorySize: 256
         events:
+            -   http:
+                    path: users
+                    method: get
+                    cors: true
+                    authorizer:
+                        name: allUsersAuthorizer
+                        arn:
+                            Fn::ImportValue: ${self:custom.stage}-authorizer
+
+            # Need an extra HTTP event handler for optional parameters, since the [request.parameters] option doesn't seem to work
             - http:
-                  path: users
+                  path: users/{size}
                   method: get
                   cors: true
+                  authorizer:
+                      name: allUsersAuthorizer
+                      arn:
+                          Fn::ImportValue: ${self:custom.stage}-authorizer
 
     user:
         handler: singleUser.main
@@ -67,3 +82,6 @@ functions:
                     name: userAuthorizer
                     arn:
                         Fn::ImportValue: ${self:custom.stage}-authorizer
+
+resources:
+    Description: The Serverless template for deploying all User based API endpoints

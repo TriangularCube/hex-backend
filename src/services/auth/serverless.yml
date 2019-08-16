@@ -11,6 +11,7 @@ custom:
     packageExternal:
         external:
             - '../../util/faunaClient.js'
+            - '../../util/faunaGraphqlQuery.js'
             - '../../util/ssm.js'
 
     stage: ${opt:stage, self:provider.stage}
@@ -30,9 +31,15 @@ provider:
 
     iamRoleStatements:
         # Copy the role statement from file to avoid errors
-        ${ file( ../../util/fauna/faunaKeyRole.yml ) }
+        ${ file( ../../common-config/faunaKeyRole.yml ) }
 
 functions:
+    preSignup:
+        handler: preSignup.main
+        memorySize: 256
+        environment:
+            STAGE: ${self:custom.stage}
+
     postConfirm:
         handler: postConfirm.main
         memorySize: 256
@@ -40,6 +47,8 @@ functions:
             STAGE: ${self:custom.stage}
 
 resources:
+    Description: The Serverless template for deploying Cognito, and Cognito trigger event handlers
+
     Resources:
         # User Pool
         HexUserPool:
@@ -60,6 +69,11 @@ resources:
                       Mutable: true
                       Required: true
 
+                    - Name: name
+                      AttributeDataType: String
+                      Mutable: true
+                      Required: true
+
                 # Password Policy
                 Policies:
                     PasswordPolicy:
@@ -70,6 +84,10 @@ resources:
                         RequireUppercase: false
 
                 LambdaConfig:
+                    PreSignUp:
+                        Fn::GetAtt:
+                            - PreSignupLambdaFunction
+                            - Arn
                     PostConfirmation:
                         Fn::GetAtt:
                             - PostConfirmLambdaFunction
@@ -113,6 +131,20 @@ resources:
                 FunctionName:
                     Fn::GetAtt:
                         - PostConfirmLambdaFunction
+                        - Arn
+                Principal: cognito-idp.amazonaws.com
+                SourceArn:
+                    Fn::GetAtt:
+                        - HexUserPool
+                        - Arn
+
+        UserPoolPreSignupPermission:
+            Type: AWS::Lambda::Permission
+            Properties:
+                Action: lambda:InvokeFunction
+                FunctionName:
+                    Fn::GetAtt:
+                        - PreSignupLambdaFunction
                         - Arn
                 Principal: cognito-idp.amazonaws.com
                 SourceArn:
