@@ -35,7 +35,16 @@ module.exports.main = async ( event ) => {
         });
     }
 
-    const data = JSON.parse( event.body );
+    let data;
+
+    try {
+        data = JSON.parse( event.body );
+    } catch( e ){
+        return GenerateResponse( false, {
+            error: 'Badly formed JSON body'
+        });
+    }
+
 
     // Reject badly formed JSON
     if( !validate( data ) ){
@@ -94,6 +103,8 @@ module.exports.main = async ( event ) => {
 
             if (!res.errors) {
                 foundUniqueID = true;
+            } else {
+                console.error( res.errors )
             }
 
         } while (!foundUniqueID);
