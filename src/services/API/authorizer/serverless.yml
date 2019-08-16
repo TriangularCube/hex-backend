@@ -16,7 +16,7 @@ provider:
     stage: dev
     region: us-west-2
     deploymentBucket:
-        name: hex-deployment-bucket
+        name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
 
 functions:
@@ -29,6 +29,8 @@ functions:
                 Fn::ImportValue: ${self:custom.stage}-hex-user-pool-id
 
 resources:
+    Description: The Serverless template for deploying the Custom Authorizer for all API
+
     Outputs:
         AuthorizerFunction:
             Value:

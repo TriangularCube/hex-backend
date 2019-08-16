@@ -11,10 +11,12 @@ provider:
     stage: dev
     region: us-west-2
     deploymentBucket:
-        name: hex-deployment-bucket
+        name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
 
 resources:
+    Description: The Serverless template for deploying the Base API Gateway resource
+
     Resources:
         HexApiGW:
             Type: AWS::ApiGateway::RestApi
