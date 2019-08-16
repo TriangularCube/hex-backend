@@ -70,3 +70,16 @@ functions:
                       name: newCubeAuthorizer
                       arn:
                           Fn::ImportValue: ${self:custom.stage}-authorizer
+
+    me:
+        handler: me.main
+        memorySize: 256
+        events:
+            - http:
+                  path: me
+                  method: get
+                  cors: true
+                  authorizer:
+                      name: meAuthorizer
+                      arn:
+                          !ImportValue ${self:custom.stage}-authorizer

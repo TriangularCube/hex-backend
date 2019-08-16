@@ -1,45 +1,45 @@
-let client, q;
+let faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require ( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
 
-    if( !client ){
-        [client, q] = await require( './faunaClient' )();
-    }
+    // TODO deal with private/shared cubes
 
-    const userParam = event.pathParameters && event.pathParameters.user ? event.pathParameters.user : null;
+    // DEBUG The following is used in case of an incoming parameter. This disabled at the moment
+    // const userParam = event.pathParameters && event.pathParameters.user ? event.pathParameters.user : null;
 
-    let result;
+
 
     try{
 
-        result = await client.query(
+        const res = await faunaQuery(`
+            query GetAllCubes{
+                allCubes {
+                    data {
+                        handle
+                        name
+                    }
+                    before
+                    after
+                }
+            }
+        `);
 
-            q.Paginate(
-                q.Match(
-                    q.Index( userParam === null ? 'all_cubes' : 'cubes_by_owner' ),
-                    userParam
-                )
-            )
+        // TODO deal with private/public cubes
 
-        )
+        return GenerateResponse( true, {
+            cubes: res.data.allCubes.data,
+            before: res.data.allCubes.before,
+            after: res.data.allCubes.after
+        });
 
     } catch( e ){
 
         console.error( e.message );
         console.error( "Error getting list of cubes" );
-        result = 'None';
+
+        return GenerateResponse.fetchError( e );
 
     }
-
-
-    // TODO Change this into an actual result
-    return {
-        statusCode: 200,
-        // headers: headers,
-        body: JSON.stringify({
-            message: 'The result is in',
-            result: result
-        }, null, 2),
-    };
 
 };

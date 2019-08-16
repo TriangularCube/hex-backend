@@ -23,9 +23,11 @@ type Card @embedded {
 
 type Query {
     allUsers: [User!]!
-    allCubes: [Cube!]!
     findUserByDisplayName( displayName: String! ): User
     findUserBySub( sub: String! ): User
+
+    allCubes: [Cube!]!
+    findCubeByHandle( handle: String! ): Cube
 }
 
 #type Mutation {

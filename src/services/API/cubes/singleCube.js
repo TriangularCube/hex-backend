@@ -1,48 +1,40 @@
-const idGen = require( 'simple-human-ids' );
-let client, q;
+let faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require ( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
 
-    if (!client) {
-        [client, q] = await require('./faunaClient')();
+    const handle = event.pathParameters.handle;
+
+    try{
+
+        let res = await faunaQuery(`
+            query GetCube {
+                findCubeByHandle(
+                    handle: "${ handle }"
+                ) {
+                    handle
+                    name
+                    cards {
+                        cardId
+                    }
+                    owner {
+                        displayName
+                    }
+                }
+            }
+        `);
+
+        return GenerateResponse( true, {
+            cube: res.data.findCubeByHandle
+        });
+
+    } catch( e ){
+
+        console.error( e.message );
+        console.error( "Error getting Cube: " + handle );
+
+        return GenerateResponse.fetchError( e );
+
     }
-
-    let result;
-    //
-    // try{
-    //
-    //     result = await client.query(
-    //         q.Get(
-    //             q.Match(
-    //
-    //             )
-    //         )
-    //     );
-    //
-    // } catch( e ){
-    //
-    //
-    //
-    // }
-
-    // HACK Use test results for now
-    result = [
-        {
-            name: idGen.new()
-        },
-        {
-            name: idGen.new()
-        }
-    ];
-
-
-    // TODO Change this into an actual result
-    return {
-        statusCode: 200,
-        // headers: headers,
-        body: JSON.stringify({
-            list: result
-        }, null, 2),
-    };
 
 };

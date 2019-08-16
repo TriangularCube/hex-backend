@@ -15,7 +15,8 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
-            - '../../../util/faunaClient.js'
+            - '../../../util/GenerateResponse.js'
+            - '../../../util/faunaGraphqlQuery.js'
             - '../../../util/ssm.js'
 
     # Our stage is based on what is passed in when running serverless
@@ -47,13 +48,9 @@ functions:
         memorySize: 256
         events:
             - http:
-                path: cubes/{user}
+                path: cubes
                 method: get
                 cors: true
-                request:
-                    parameters:
-                        paths:
-                            user: false
                 authorizer:
                     name: cubesAuthorizer
                     arn:
@@ -64,13 +61,13 @@ functions:
         memorySize: 256
         events:
             - http:
-                  path: cube/{id}
+                  path: cube/{handle}
                   method: get
                   cors: true
                   request:
                       parameters:
                           paths:
-                              id: true
+                              handle: true
                   authorizer:
                       name: cubeAuthorizer
                       arn:
