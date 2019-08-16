@@ -107,10 +107,7 @@ module.exports.main = async ( event ) => {
     } catch ( e ) {
 
         // Catch all errors in Fetch
-        return GenerateResponse( false, {
-            error: 'Fetch error',
-            errorMessage: e.message
-        });
+        return GenerateResponse.fetchError( e );
 
     }
 

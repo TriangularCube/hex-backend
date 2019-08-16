@@ -13,15 +13,12 @@ module.exports.main = async ( event ) => {
     try{
 
         const res = await faunaQuery(`
-        
+            
         `);
 
     } catch( e ){
 
-        return GenerateResponse( false, {
-            error: 'Fetch Error',
-
-        })
+        return GenerateResponse.fetchError( e );
 
     }
 
