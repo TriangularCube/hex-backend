@@ -1,4 +1,5 @@
 let faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require ( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
 
@@ -6,11 +7,6 @@ module.exports.main = async ( event ) => {
     if( event.queryStringParameters && event.queryStringParameters.size ){
         size = event.queryStringParameters.size;
     }
-
-    // Default false message
-    let response = {
-        success: false
-    };
 
     try{
 
@@ -34,26 +30,14 @@ module.exports.main = async ( event ) => {
 
         // TODO deal with public/private profiles
 
-        response.success = true;
-        response.users = result;
+        return GenerateResponse( true, {
+            users: result.data.allUsers.data,
+            before: result.data.allUsers.before,
+            after: result.data.allUsers.after
+        });
 
     } catch( e ){
-        console.error( e.message );
-        console.error( "Error getting list of users" );
-
-        response.success = false;
-        response = null;
+        return GenerateResponse.fetchError( e );
     }
-
-    // const headers = {
-    //     "Access-Control-Allow-Origin": "*"
-    // };
-
-    // TODO Change this into an actual result
-    return {
-        statusCode: 200,
-        // headers: headers,
-        body: JSON.stringify({ response }, null, 2)
-    };
 
 };

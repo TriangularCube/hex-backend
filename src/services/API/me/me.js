@@ -1,31 +1,29 @@
-let client, q;
+const faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
 
     // Reject if not logged in
     if( event.requestContext.authorizer.principalId === 'none' ){
-        return {
-            statusCode: 401,
-            // headers: headers,
-            body: JSON.stringify({
-                error: 'User not logged in'
-            }, null, 2),
-        };
+        return GenerateResponse( false, {
+            error: 'Not logged in'
+        });
     }
 
-    if (!client) {
-        [client, q] = await require('./faunaClient')();
+    try{
+
+        const res = await faunaQuery(`
+        
+        `);
+
+    } catch( e ){
+
+        return GenerateResponse( false, {
+            error: 'Fetch Error',
+
+        })
+
     }
-
-
-
-    // TODO Return
-    return {
-        statusCode: 200,
-        // headers: headers,
-        body: JSON.stringify({
-            data: 'Placeholder!'
-        }, null, 2),
-    };
 
 };
+

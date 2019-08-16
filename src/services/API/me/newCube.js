@@ -1,7 +1,6 @@
 const idGen = require( 'simple-human-ids' );
-
-// let client, q;
 const faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require( './GenerateResponse' );
 
 const ajvImport = require( 'ajv' );
 const ajv = new ajvImport({ allErrors: true });
@@ -116,13 +115,3 @@ module.exports.main = async ( event ) => {
     }
 
 };
-
-function GenerateResponse( success, data ) {
-    return {
-        statusCode: 200,
-        body: JSON.stringify({
-            success,
-            ...data
-        }, null, 2),
-    };
-}

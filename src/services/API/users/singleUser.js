@@ -1,13 +1,10 @@
-let faunaQuery = require( './faunaGraphqlQuery' );
+const faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require ( './GenerateResponse' );
 
 
 module.exports.main = async ( event ) => {
 
     const displayName = event.pathParameters.displayName;
-
-    let response = {
-        success: false
-    };
 
     try{
 
@@ -29,28 +26,13 @@ module.exports.main = async ( event ) => {
 
         // TODO deal with public/private profiles
 
-        response.success = true;
-        response.user = result.data.findUserByDisplayName;
+        return GenerateResponse( true, {
+            user: result.data.findUserByDisplayName
+        });
+
 
     } catch( e ){
-        console.error( e.message );
-        console.error( "Error was for display name: " + displayName );
-
-        response.success = false;
-        response.error = e.message;
-        response.user = null;
+        return GenerateResponse.fetchError( e );
     }
-
-
-    // const headers = {
-    //     "Access-Control-Allow-Origin": "*"
-    // };
-
-    // TODO Change this into an actual result
-    return {
-        statusCode: 200,
-        // headers: headers,
-        body: JSON.stringify({ response }, null, 2),
-    };
 
 };

@@ -17,6 +17,8 @@ provider:
         serverSideEncryption: AES256
 
 resources:
+    Description: The Serverless template for deploying FaunaDB's GraphQL backed DB Schema
+
     Resources:
         FaunaGraphQL:
             Type: Custom::FaunaGraphQL

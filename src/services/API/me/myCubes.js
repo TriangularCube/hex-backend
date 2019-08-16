@@ -1,4 +1,5 @@
 const faunaQuery = require( './faunaGraphqlQuery' );
+const GenerateResponse = require( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
 
@@ -42,13 +43,3 @@ module.exports.main = async ( event ) => {
     }
 
 };
-
-function GenerateResponse( success, data ) {
-    return {
-        statusCode: 200,
-        body: JSON.stringify({
-            success,
-            ...data
-        }, null, 2),
-    };
-}

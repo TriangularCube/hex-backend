@@ -47,6 +47,8 @@ functions:
             STAGE: ${self:custom.stage}
 
 resources:
+    Description: The Serverless template for deploying Cognito, and Cognito trigger event handlers
+
     Resources:
         # User Pool
         HexUserPool:
