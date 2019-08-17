@@ -1,6 +1,7 @@
 service: hex-auth
 
 plugins:
+    - serverless-deployment-bucket
     - serverless-plugin-common-excludes
     - serverless-package-external
     - serverless-plugin-include-dependencies
@@ -9,6 +10,8 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
+            - '../../util/faunaClient.js'
+            - '../../util/faunaGraphqlQuery.js'
             - '../../util/ssm.js'
 
     stage: ${opt:stage, self:provider.stage}
@@ -23,25 +26,29 @@ provider:
     stage: dev
     region: us-west-2
     deploymentBucket:
-        name: hex-deployment-bucket
+        name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
 
     iamRoleStatements:
-        - Effect: 'Allow'
-          Action: 'ssm:GetParameters'
-          Resource:
-            - 'arn:aws:ssm:us-west-2:852768116392:parameter/FaunaKey'
-        - Effect: 'Allow'
-          Action: 'kms:Decrypt'
-          Resource:
-            -  'arn:aws:kms:us-west-2:852768116392:key/a7bb10cf-bbb2-41bc-824d-561c4545dd88'
+        # Copy the role statement from file to avoid errors
+        ${ file( ../../common-config/faunaKeyRole.yml ) }
 
 functions:
+    preSignup:
+        handler: preSignup.main
+        memorySize: 256
+        environment:
+            STAGE: ${self:custom.stage}
+
     postConfirm:
         handler: postConfirm.main
         memorySize: 256
+        environment:
+            STAGE: ${self:custom.stage}
 
 resources:
+    Description: The Serverless template for deploying Cognito, and Cognito trigger event handlers
+
     Resources:
         # User Pool
         HexUserPool:
@@ -62,6 +69,11 @@ resources:
                       Mutable: true
                       Required: true
 
+                    - Name: name
+                      AttributeDataType: String
+                      Mutable: true
+                      Required: true
+
                 # Password Policy
                 Policies:
                     PasswordPolicy:
@@ -72,6 +84,10 @@ resources:
                         RequireUppercase: false
 
                 LambdaConfig:
+                    PreSignUp:
+                        Fn::GetAtt:
+                            - PreSignupLambdaFunction
+                            - Arn
                     PostConfirmation:
                         Fn::GetAtt:
                             - PostConfirmLambdaFunction
@@ -86,6 +102,28 @@ resources:
                     Ref: HexUserPool
                 GenerateSecret: false
 
+        HexMobileAppClient:
+            Type: AWS::Cognito::UserPoolClient
+            Properties:
+                # Generate an App Client Name based on stage
+                ClientName: hex-${self:custom.stage}-mobile-app-client
+                UserPoolId:
+                    Ref: HexUserPool
+                GenerateSecret: false
+                RefreshTokenValidity: 3650
+
+        HexPostmanAppClient:
+            Type: AWS::Cognito::UserPoolClient
+            Properties:
+                # Generate an App Client Name based on stage
+                ClientName: hex-${self:custom.stage}-postman-app-client
+                UserPoolId:
+                    Ref: HexUserPool
+                GenerateSecret: false
+                RefreshTokenValidity: 3650
+                ExplicitAuthFlows:
+                    - USER_PASSWORD_AUTH
+
         UserPoolPostConfirmPermission:
             Type: AWS::Lambda::Permission
             Properties:
@@ -93,6 +131,20 @@ resources:
                 FunctionName:
                     Fn::GetAtt:
                         - PostConfirmLambdaFunction
+                        - Arn
+                Principal: cognito-idp.amazonaws.com
+                SourceArn:
+                    Fn::GetAtt:
+                        - HexUserPool
+                        - Arn
+
+        UserPoolPreSignupPermission:
+            Type: AWS::Lambda::Permission
+            Properties:
+                Action: lambda:InvokeFunction
+                FunctionName:
+                    Fn::GetAtt:
+                        - PreSignupLambdaFunction
                         - Arn
                 Principal: cognito-idp.amazonaws.com
                 SourceArn:

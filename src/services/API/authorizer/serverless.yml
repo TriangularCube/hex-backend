@@ -1,6 +1,7 @@
 service: hex-api-authorizer
 
 plugins:
+    - serverless-deployment-bucket
     - serverless-plugin-common-excludes
     - serverless-plugin-include-dependencies
 
@@ -15,18 +16,21 @@ provider:
     stage: dev
     region: us-west-2
     deploymentBucket:
-        name: hex-deployment-bucket
+        name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
 
 functions:
     authorizer:
         handler: authorizer.main
+        memorySize: 128
         environment:
             Region: ${self:provider.region}
             UserPoolId:
                 Fn::ImportValue: ${self:custom.stage}-hex-user-pool-id
 
 resources:
+    Description: The Serverless template for deploying the Custom Authorizer for all API
+
     Outputs:
         AuthorizerFunction:
             Value:

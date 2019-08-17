@@ -1,5 +1,10 @@
 service: hex-user-uploads
 
+# TODO the whole thing basically
+
+plugins:
+    - serverless-deployment-bucket
+
 custom:
     # Our stage is based on what is passed in when running serverless
     # commands. Or falls back to what we have set in the provider section.
@@ -11,7 +16,7 @@ provider:
     stage: dev
     region: us-west-2
     deploymentBucket:
-        name: hex-deployment-bucket
+        name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
 
 resources:

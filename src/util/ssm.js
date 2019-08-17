@@ -21,11 +21,13 @@ module.exports = class SSM {
         // Set the SSM instance
         ssmInstance = ssmInstance || SSM.loadSSM();
 
-        const res = await ssmInstance.getParameters({Names: this.listOfParams, WithDecryption: true } ).promise();
+        const res = await ssmInstance.getParameters({ Names: this.listOfParams, WithDecryption: true } ).promise();
 
         res.Parameters.map( (element) => {
             this.store[ element.Name ] = element.Value;
-        })
+        });
+
+        this.loadedAt = Date.now();
 
     }
 
@@ -47,10 +49,8 @@ module.exports = class SSM {
     }
 
     shouldUpdate(){
-
         // If params haven't been loaded yet, or time since last update is more than cache time
         return !this.paramsLoaded || Date.now() - this.loadedAt > cacheTime;
-
     }
 
 };
