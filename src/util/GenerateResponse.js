@@ -1,6 +1,9 @@
 let GenerateResponse = ( success, data ) => {
     return {
         statusCode: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
             success,
             ...data
@@ -14,6 +17,9 @@ GenerateResponse.fetchError = ( err ) => {
 
     return {
         statusCode: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
             success: false,
             error: 'Fetch Error',
