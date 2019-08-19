@@ -16,6 +16,7 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
+            - '../../../util/errorCodes.json'
             - '../../../util/GenerateResponse.js'
             - '../../../util/faunaGraphqlQuery.js'
             - '../../../util/ssm.js'
