@@ -1,6 +1,7 @@
 const idGen = require( 'simple-human-ids' );
 const faunaQuery = require( './faunaGraphqlQuery' );
 const GenerateResponse = require( './GenerateResponse' );
+const errorCodes = require( './errorCodes.json' );
 
 const ajvImport = require( 'ajv' );
 const ajv = new ajvImport({ allErrors: true });
@@ -31,7 +32,8 @@ module.exports.main = async ( event ) => {
     // Reject unauthenticated users
     if( userSub === 'none' ){
         return GenerateResponse( false,{
-            error: 'Unauthenticated users cannot create cubes'
+            error: errorCodes.notLoggedIn,
+            errorMessage: 'Unauthenticated users cannot create cubes'
         });
     }
 
@@ -41,7 +43,8 @@ module.exports.main = async ( event ) => {
         data = JSON.parse( event.body );
     } catch( e ){
         return GenerateResponse( false, {
-            error: 'Badly formed JSON body'
+            error: errorCodes.badJsonBody,
+            errorMessage: 'The Body received cannot be parsed as a JSON'
         });
     }
 
@@ -49,7 +52,7 @@ module.exports.main = async ( event ) => {
     // Reject badly formed JSON
     if( !validate( data ) ){
         return GenerateResponse( false,{
-            error: 'Invalid JSON data',
+            error: errorCodes.invalidJSON,
             errorMessage: validate.errors
         });
     }
@@ -71,7 +74,8 @@ module.exports.main = async ( event ) => {
         const user = res.data.findUserBySub;
         if (user === null) {
             GenerateResponse(false, {
-                error: 'No user by this sub. THIS SHOULD NOT HAVE HAPPENED'
+                error: 'User Not Found',
+                errorMessage: 'No user by this sub. THIS SHOULD NOT HAVE HAPPENED'
             })
         }
 

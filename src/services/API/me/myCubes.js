@@ -23,13 +23,26 @@ module.exports.main = async ( event ) => {
                             handle
                             name
                         }
+                        before
+                        after
                     }
                 }
             }
         `);
 
+        if( res.errors ){
+            GenerateResponse( false, {
+                error: 'Fauna Query error',
+                errorMessage: res.errors
+            })
+        }
+
+        const obj = res.data.findUserBySub.cubes;
+
         return GenerateResponse( true, {
-            cubes: res.data.findUserBySub.cubes.data
+            cubes: obj.data,
+            before: obj.before,
+            after: obj.after
         });
 
     } catch( e ){
