@@ -1,6 +1,7 @@
 const idGen = require( 'simple-human-ids' );
 const faunaQuery = require( './faunaGraphqlQuery' );
 const GenerateResponse = require( './GenerateResponse' );
+const errorCodes = require( './errorCodes.json' );
 
 const ajvImport = require( 'ajv' );
 const ajv = new ajvImport({ allErrors: true });
@@ -31,7 +32,8 @@ module.exports.main = async ( event ) => {
     // Reject unauthenticated users
     if( userSub === 'none' ){
         return GenerateResponse( false,{
-            error: 'Unauthenticated users cannot create cubes'
+            error: errorCodes.notLoggedIn,
+            errorMessage: 'Unauthenticated users cannot create cubes'
         });
     }
 
