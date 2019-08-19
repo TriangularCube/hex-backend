@@ -4,7 +4,8 @@ type User {
     cubes: [Cube] @relation
     type: Usertype!
     active: Boolean!
-    profile: Profile
+    profile: Profile,
+    imageUrl: String
 }
 
 enum Usertype{
