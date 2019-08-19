@@ -1,3 +1,5 @@
+const errorCodes = require( './errorCodes' );
+
 let GenerateResponse = ( success, data ) => {
     return {
         statusCode: 200,
@@ -22,7 +24,7 @@ GenerateResponse.fetchError = ( err ) => {
         },
         body: JSON.stringify({
             success: false,
-            error: 'Fetch Error',
+            error: errorCodes.fetchError,
             errorMessage: err.message
         }, null, 2)
     }
