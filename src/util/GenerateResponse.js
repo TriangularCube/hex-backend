@@ -1,4 +1,4 @@
-const errorCodes = require( './errorCodes' );
+const errorCodes = require( './errorCodes.json' );
 
 let GenerateResponse = ( success, data ) => {
     return {
