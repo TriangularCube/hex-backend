@@ -4,10 +4,17 @@ type User {
     cubes: [Cube] @relation
     type: Usertype!
     active: Boolean!
+    profile: Profile,
+    imageUrl: String
 }
 
 enum Usertype{
     FREE, PATRON
+}
+
+type Profile @embedded {
+    owner: User! @relation
+    description: String
 }
 
 type Cube {

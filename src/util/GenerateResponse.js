@@ -1,6 +1,11 @@
+const errorCodes = require( './errorCodes.json' );
+
 let GenerateResponse = ( success, data ) => {
     return {
         statusCode: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
             success,
             ...data
@@ -14,9 +19,12 @@ GenerateResponse.fetchError = ( err ) => {
 
     return {
         statusCode: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
             success: false,
-            error: 'Fetch Error',
+            error: errorCodes.fetchError,
             errorMessage: err.message
         }, null, 2)
     }
