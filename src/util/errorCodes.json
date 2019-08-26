@@ -1,6 +1,4 @@
 {
     "notLoggedIn": "Not Logged In",
-    "fetchError": "Fetch Error from Endpoint",
-    "badJSONBody": "Bad Json Body",
-    "invalidJSON": "Invalid JSON"
+    "fetchError": "Fetch Error from Endpoint"
 }

@@ -51,12 +51,18 @@ module.exports.main = async ( event ) => {
 
     // Reject badly formed JSON
     if( !validate( data ) ){
-        return GenerateResponse( false,{
+        return GenerateResponse( false, {
             error: errorCodes.invalidJSON,
             errorMessage: validate.errors
         });
     }
 
+    // Reject if name too short
+    if( data.name.length < 1 ){
+        return GenerateResponse( false, {
+            error: 'Name is too short'
+        })
+    }
 
     try {
 
@@ -80,7 +86,7 @@ module.exports.main = async ( event ) => {
         }
 
 
-        let generatedID, foundUniqueID = false;
+        let generatedID, foundUniqueID = false, tries = 0;
 
         do {
 
@@ -108,11 +114,18 @@ module.exports.main = async ( event ) => {
             if (!res.errors) {
                 foundUniqueID = true;
             } else {
-                console.error( res.errors )
+                console.error( res.errors );
+                tries += 1;
             }
 
-        } while (!foundUniqueID);
+        } while (!foundUniqueID && tries <= 10 );
 
+        // If we tried 10 times and still could not generate a unique ID
+        if( !foundUniqueID ){
+            return GenerateResponse( false, {
+                error: errorCodes.couldNotGenerateUniqueID
+            });
+        }
 
         // Finally return the response that creation was successful
         return GenerateResponse( true, {
