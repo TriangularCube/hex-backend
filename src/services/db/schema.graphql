@@ -21,6 +21,7 @@ type Cube {
     handle: String! @unique
     name: String!
     cards: [Card!]
+    workspace: [Card!]
     owner: User! @relation
 }
 

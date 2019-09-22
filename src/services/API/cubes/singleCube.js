@@ -17,6 +17,9 @@ module.exports.main = async ( event ) => {
                     cards {
                         cardId
                     }
+                    workspace {
+                        cardId
+                    }
                     owner {
                         displayName
                     }
@@ -24,8 +27,16 @@ module.exports.main = async ( event ) => {
             }
         `);
 
+        const cube = res.data.findCubeByHandle;
+
+        if( !cube ){
+            return GenerateResponse( false, {
+                error: 'Cube not found'
+            });
+        }
+
         return GenerateResponse( true, {
-            cube: res.data.findCubeByHandle
+            cube
         });
 
     } catch( e ){
