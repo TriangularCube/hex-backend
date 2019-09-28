@@ -1,0 +1,14 @@
+{
+    sub: # User Sub from Cognito; This is unique for any Cognito user
+    displayName: # The user's display name. This is unique for all users in system
+    profile: {
+        # The user's profile information
+        name, description, etc.
+        imageUrl # Avatar image
+        backgroundImg?
+    }
+    userType: UNCONFIRMED, FREE, PREMIUM
+
+
+    # No list of cubes stored in the user object. This should be a tag in the cube objects
+}

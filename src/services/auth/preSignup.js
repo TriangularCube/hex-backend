@@ -1,41 +1,50 @@
-const faunaQuery = require( './faunaGraphqlQuery' );
+let client, q;
 
 module.exports.main = async (event) => {
 
-    // Don't care if we're handling Admin singup
+    // Don't care if we're handling Admin sign up
     if( event.triggerSource !== 'PreSignUp_SignUp' ){
         // Return the event and end the lambda
         return event;
     }
 
+    // Get the client
+    if( !client ){
+        const faunaClient = require( './faunaClient' );
+        [client, q] = await faunaClient();
+    }
+
     // Otherwise
 
-    const sub = event.userName;
-    const displayName = event.request.userAttributes.name;
+    console.log( event.request );
 
-    // Make the user
-    const res = await faunaQuery(`
-        mutation MakeUser{
-            createUser( data: {
-                sub: "${sub}"
-                displayName: "${displayName}"
-                type: FREE
-                active: false
-            }){
-                _id
-                sub
-                displayName
-            }
-        }
-    `);
+    try{
+        // Make the user
+        let res = await client.query(
+            q.Create(
+                q.Collection( "users" ),
+                {
+                    data: {
+                        sub: event.userName,
+                        displayName: event.request.userAttributes.name,
+                        userType: 'UNCONFIRMED',
+                        profile: {
+                            email: event.request.userAttributes.email
+                        }
+                    }
+                }
+            )
+        );
 
-    if( res.errors ){
-        console.error( `Error creating user, Error message: ${ res.errors }` );
-        throw new Error( `Error creating user. Error Message: ` + JSON.stringify( res.errors ) )
+        console.log( `Created user. Response: ${res}` );
+
+    } catch( e ){
+        console.error( `Error creating user, Error message: ${ e.message }` );
+        throw new Error( `Error creating user. Error Message: ${e.message}` );
     }
 
     // DEBUG for convenience
-    // event.response.autoConfirmUser = true;
+    event.response.autoConfirmUser = true;
 
     return event;
 

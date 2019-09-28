@@ -44,6 +44,9 @@ provider:
         # Copy the role statements to avoid errors
         ${ file( ../../../common-config/faunaKeyRole.yml ) }
 
+    stackTags:
+        function: api
+
 functions:
     users:
         handler: allUsers.main

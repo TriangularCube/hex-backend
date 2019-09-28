@@ -11,7 +11,6 @@ custom:
     packageExternal:
         external:
             - '../../util/faunaClient.js'
-            - '../../util/faunaGraphqlQuery.js'
             - '../../util/ssm.js'
 
     stage: ${opt:stage, self:provider.stage}
@@ -32,6 +31,9 @@ provider:
     iamRoleStatements:
         # Copy the role statement from file to avoid errors
         ${ file( ../../common-config/faunaKeyRole.yml ) }
+
+    stackTags:
+        function: auth
 
 functions:
     preSignup:

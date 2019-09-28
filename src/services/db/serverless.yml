@@ -6,6 +6,7 @@ plugins:
 custom:
     stage: ${opt:stage, self:provider.stage}
     key: /fauna/FaunaKey-${self:custom.stage}
+    faunaArn: !ImportValue fauna-collection-lambda-arn
 
 provider:
     name: aws
@@ -16,21 +17,84 @@ provider:
         name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
 
+    stackTags:
+        function: db
+
 resources:
-    Description: The Serverless template for deploying FaunaDB's GraphQL backed DB Schema
+    Description: The Serverless template for deploying FaunaDB DB Schema
 
     Resources:
-        FaunaGraphQL:
-            Type: Custom::FaunaGraphQL
+
+        # Users collection
+        UserCollection:
+            Type: Custom::FaunaCollection
             Properties:
                 ServiceToken:
-                    Fn::ImportValue: fauna-graphql-lambda-arn
-                KeyParameterSecure: /fauna/FaunaKey-${self:custom.stage}
-                Schema: >-
-                    ${ file( ./schema.graphql ) }
+                    ${self:custom.faunaArn}
+                CollectionName: users
+                KeyParameterSecure: ${self:custom.key}
+                Indices:
+                    all:
+                        Name: all_users
+                    user-id:
+                        Name: user_ref_by_sub
+                        Terms:
+                            - field:
+                                - data
+                                - sub
+                        Values:
+                            - field:
+                                - ref
+                        Unique: true
+                    user-display:
+                        Name: user_by_displayName
+                        Terms:
+                            - field:
+                                - data
+                                - displayName
+                        Unique: true
+
+        CubeCollection:
+            Type: Custom::FaunaCollection
+            Properties:
+                ServiceToken: ${self:custom.faunaArn}
+                CollectionName: cubes
+                KeyParameterSecure: ${self:custom.key}
+                Indices:
+                    # This is purely for the web client so I can keep an eye on things
+                    # Should delete for production
+                    all:
+                        Name: all_cubes
+                    id:
+                        Name: cube_by_id
+                        Terms:
+                            - field:
+                                - data
+                                - id
+                        Unique: true
+                    owner:
+                        Name: cubes_by_owner
+                        Terms:
+                            - field:
+                                - data
+                                - owner
+                        Values:
+                            - field:
+                                - data
+                                - name
+                            - field:
+                                - data
+                                - id
+
     Outputs:
-        Response:
+        UserResponse:
             Value:
                 Fn::GetAtt:
-                    - FaunaGraphQL
+                    - UserCollection
+                    - Response
+
+        CubeResponse:
+            Value:
+                Fn::GetAtt:
+                    - CubeCollection
                     - Response

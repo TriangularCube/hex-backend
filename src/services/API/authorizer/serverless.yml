@@ -19,6 +19,9 @@ provider:
         name: hex-deployment-bucket-${self:custom.stage}
         serverSideEncryption: AES256
 
+    stackTags:
+        function: api
+
 functions:
     authorizer:
         handler: authorizer.main
