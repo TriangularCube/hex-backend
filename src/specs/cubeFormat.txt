@@ -1,0 +1,26 @@
+{
+    owner: #UserRef
+    cardList: [
+        {
+            cardId: # some sort of card ID, probably Scryfall ID
+        }...
+    ]
+    workspace: [
+        {
+            cardId: # same as card list
+        }...
+    ]
+    history: [
+        {
+            date/time,
+            change: {
+                blah...
+            }
+        }
+    ]
+    currentWork: [
+        {
+            TODO
+        }
+    ]
+}

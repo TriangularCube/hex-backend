@@ -1,4 +1,4 @@
-const faunaQuery = require( './faunaGraphqlQuery' );
+const faunaClient = require( './faunaClient' );
 const GenerateResponse = require( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
@@ -10,9 +10,24 @@ module.exports.main = async ( event ) => {
         });
     }
 
+    // Get the client
+    const [client, q] = await faunaClient();
+
     const userSub = event.requestContext.authorizer.principalId;
 
     try{
+
+        const cubes = await client.query(
+            q.Map(
+                q.Match(
+                    q.Index( 'user_ref_by_sub' ),
+                    userSub
+                ),
+                q.Lambda( 'x',  )
+            )
+        );
+
+        // TODO Get only specific properties from Cubes
 
         const res = await faunaQuery(`
             query GetMyCubes{

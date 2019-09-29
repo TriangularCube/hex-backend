@@ -1,4 +1,4 @@
-let client, q;
+const faunaClient = require( './faunaClient' );
 
 module.exports.main = async (event) => {
 
@@ -9,10 +9,8 @@ module.exports.main = async (event) => {
     }
 
     // Get the client
-    if( !client ){
-        const faunaClient = require( './faunaClient' );
-        [client, q] = await faunaClient();
-    }
+    const [client, q] = await faunaClient();
+
 
     // Otherwise
 

@@ -1,4 +1,4 @@
-const faunaQuery = require( './faunaGraphqlQuery' );
+const faunaClient = require( './faunaClient' );
 const GenerateResponse = require( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
@@ -10,34 +10,24 @@ module.exports.main = async ( event ) => {
         });
     }
 
+    // Get the client
+    const [client, q] = await faunaClient();
+
     const userSub = event.requestContext.authorizer.principalId;
 
     try{
 
-        const res = await faunaQuery(`
-            query GetUser{
-                findUserBySub( sub: "${ userSub }" ){
-                    displayName
-                    type
-                    cubes{
-                        data {
-                            handle
-                            name
-                        }
-                    }
-                }
-            }
-        `);
-
-        if( !!res.errors ){
-            return GenerateResponse( false, {
-                error: 'Fauna Query Error',
-                errorMessage: res.errors
-            })
-        }
+        const user = await client.query(
+            q.Get(
+                q.Match(
+                    q.Index( 'user_ref_by_sub' ),
+                    userSub
+                )
+            )
+        );
 
         return GenerateResponse( true, {
-            user: res.data.findUserBySub
+            data: user.data
         });
 
     } catch( e ){

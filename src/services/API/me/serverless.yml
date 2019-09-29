@@ -15,9 +15,8 @@ custom:
     # Package External plugin config
     packageExternal:
         external:
-            - '../../../util/errorCodes.json'
+            - '../../../util/faunaClient.js'
             - '../../../util/GenerateResponse.js'
-            - '../../../util/faunaGraphqlQuery.js'
             - '../../../util/ssm.js'
 
     # Our stage is based on what is passed in when running serverless
@@ -43,6 +42,8 @@ provider:
       # Copy the role statements to avoid errors
         ${ file( ../../../common-config/faunaKeyRole.yml ) }
 
+    stackTags:
+        function: api
 
 functions:
     myCubes:

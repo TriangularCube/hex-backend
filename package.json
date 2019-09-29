@@ -6,7 +6,7 @@
     "author": "Michael Liu",
     "license": "MIT",
     "scripts": {
-        "offline-id": "cd $INIT_CWD && AUTHORIZER='{\"principalId\":\"0421519b-5265-4f27-8f6e-8eeab88eebd8\"}' sls offline start",
+        "offline-id": "cd $INIT_CWD && AUTHORIZER='{\"principalId\":\"d454f736-b2c2-4d62-b689-230462d56ed4\"}' sls offline start",
         "deploy-db": "cd src/services/db && sls deploy -v"
     },
     "devDependencies": {

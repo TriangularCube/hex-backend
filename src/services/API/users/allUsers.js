@@ -1,7 +1,10 @@
-let faunaQuery = require( './faunaGraphqlQuery' );
+const faunaClient = require( './faunaClient' );
 const GenerateResponse = require ( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
+
+    // Get the client
+    const [client, q] = await faunaClient();
 
     let size = 20;
     if( event.queryStringParameters && event.queryStringParameters.size ){
@@ -10,31 +13,21 @@ module.exports.main = async ( event ) => {
 
     try{
 
-        const result = await faunaQuery(`
-            query GetAllUsers{
-                allUsers( _size: ${size} ){
-                    data{
-                        _id
-                        displayName
-                        cubes{
-                            data{
-                                _id
-                            }
-                        }
+        const res = await client.query(
+            q.Map(
+                q.Paginate(
+                    q.Match(
+                        q.Index( 'all_users' )
+                    ),
+                    {
+                        size
                     }
-                    before
-                    after
-                }
-            }
-        `);
+                ),
+                q.Lambda( 'x', q.Select( 'data', q.Get( q.Var( 'x' ) ) ) )
+            )
+        );
 
-        // TODO deal with public/private profiles
-
-        return GenerateResponse( true, {
-            users: result.data.allUsers.data,
-            before: result.data.allUsers.before,
-            after: result.data.allUsers.after
-        });
+        return GenerateResponse( true, res );
 
     } catch( e ){
         return GenerateResponse.fetchError( e );
