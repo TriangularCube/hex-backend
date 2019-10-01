@@ -1,24 +1,32 @@
 {
-    owner: #UserRef
-    cardList: [
-        {
-            cardId: # some sort of card ID, probably Scryfall ID
-        }...
-    ]
-    workspace: [
-        {
-            cardId: # same as card list
-        }...
-    ]
+    owner: # UserRef
+    name: # Cube Name
+    id: # Generated ID from simple-human-ids
+    lists: {
+        cube: [
+            {
+              cardId: # some sort of card ID, probably Scryfall ID
+            }...
+        ]
+        workspace: [
+            {
+                cardId: # same as card list
+            }...
+        ]
+    }
     history: [
+        # First entry always denote the cube's creation
         {
-            date/time,
-            change: {
+            time: # Cube Creation Time
+        },
+        {
+            time: # Update Time
+            changes: {
                 blah...
             }
         }
     ]
-    currentWork: [
+    stash: [
         {
             TODO
         }

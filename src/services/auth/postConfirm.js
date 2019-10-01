@@ -23,7 +23,7 @@ module.exports.main = async (event) => {
         let res = await client.query(
             q.Get(
                 q.Match(
-                    q.Index( 'user_ref_by_sub' ),
+                    q.Index( 'user_by_sub' ),
                     sub
                 )
             )

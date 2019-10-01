@@ -1,42 +1,36 @@
-let faunaQuery = require( './faunaGraphqlQuery' );
+const faunaClient = require( './faunaClient' );
 const GenerateResponse = require ( './GenerateResponse' );
 
 module.exports.main = async ( event ) => {
 
     const handle = event.pathParameters.handle;
 
+    // Get the client
+    const [client, q] = await faunaClient();
+
     try{
 
-        let res = await faunaQuery(`
-            query GetCube {
-                findCubeByHandle(
-                    handle: "${ handle }"
-                ) {
+        let res = await client.query(
+            q.Get(
+                q.Match(
+                    q.Index( 'cube_by_handle' ),
                     handle
-                    name
-                    cards {
-                        cardId
-                    }
-                    workspace {
-                        cardId
-                    }
-                    owner {
-                        displayName
-                    }
-                }
-            }
-        `);
+                )
+            )
+        );
 
-        const cube = res.data.findCubeByHandle;
+        const owner = await client.query(
+            q.Get(
+                q.Ref( res.data.owner )
+            )
+        );
 
-        if( !cube ){
-            return GenerateResponse( false, {
-                error: 'Cube not found'
-            });
-        }
+        res.data.owner = {
+            displayName: owner.data.displayName
+        };
 
         return GenerateResponse( true, {
-            cube
+            data: res.data
         });
 
     } catch( e ){

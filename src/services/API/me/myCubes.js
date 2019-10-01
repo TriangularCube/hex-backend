@@ -18,46 +18,18 @@ module.exports.main = async ( event ) => {
     try{
 
         const cubes = await client.query(
-            q.Map(
-                q.Match(
-                    q.Index( 'user_ref_by_sub' ),
-                    userSub
-                ),
-                q.Lambda( 'x',  )
+            q.Paginate(
+                q.Join(
+                    q.Match( q.Index( 'user_by_sub' ), userSub ),
+                    q.Index( 'cubes_by_owner' )
+                )
             )
         );
 
         // TODO Get only specific properties from Cubes
 
-        const res = await faunaQuery(`
-            query GetMyCubes{
-                findUserBySub( sub: "${ userSub }" ){
-                    cubes {
-                        data {
-                            _id
-                            handle
-                            name
-                        }
-                        before
-                        after
-                    }
-                }
-            }
-        `);
-
-        if( res.errors ){
-            GenerateResponse( false, {
-                error: 'Fauna Query error',
-                errorMessage: res.errors
-            })
-        }
-
-        const obj = res.data.findUserBySub.cubes;
-
         return GenerateResponse( true, {
-            cubes: obj.data,
-            before: obj.before,
-            after: obj.after
+            ...cubes
         });
 
     } catch( e ){
