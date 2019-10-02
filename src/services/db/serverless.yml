@@ -1,4 +1,4 @@
-service: faunadb-graphql-resource
+service: faunadb-collections-resource
 
 plugins:
     - serverless-deployment-bucket
