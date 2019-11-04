@@ -10,19 +10,19 @@
         "deploy-db": "cd src/services/db && sls deploy -v"
     },
     "devDependencies": {
-        "aws-sdk": "^2.538.0",
-        "serverless": "^1.53.0",
+        "aws-sdk": "^2.563.0",
+        "serverless": "^1.56.1",
         "serverless-deployment-bucket": "^1.1.0",
-        "serverless-offline": "^5.11.0",
+        "serverless-offline": "^5.12.0",
         "serverless-package-external": "^1.1.1",
         "serverless-plugin-common-excludes": "^2.4.0",
         "serverless-plugin-include-dependencies": "^3.2.1"
     },
     "dependencies": {
         "ajv": "^6.10.2",
-        "faunadb": "^2.8.1",
+        "faunadb": "^2.9.3",
         "node-fetch": "^2.6.0",
         "node-jose": "^1.1.3",
-        "simple-human-ids": "^2.0.3"
+        "simple-human-ids": "^2.0.4"
     }
 }

@@ -15,28 +15,36 @@ module.exports.main = async ( event ) => {
 
     const userSub = event.requestContext.authorizer.principalId;
 
-    try{
+    let tries = 0;
+    let errors = [];
 
-        const cubes = await client.query(
-            q.Paginate(
-                q.Join(
-                    q.Match( q.Index( 'user_by_sub' ), userSub ),
-                    q.Index( 'cubes_by_owner' )
+    do{
+        try{
+
+            const cubes = await client.query(
+                q.Paginate(
+                    q.Join(
+                        q.Match( q.Index( 'user_by_sub' ), userSub ),
+                        q.Index( 'cubes_by_owner' )
+                    )
                 )
-            )
-        );
+            );
 
-        // TODO Get only specific properties from Cubes
+            // TODO Get only specific properties from Cubes
 
-        return GenerateResponse( true, {
-            ...cubes
-        });
+            return GenerateResponse( true, {
+                ...cubes
+            });
 
-    } catch( e ){
+        } catch( e ){
 
-        // Catch Fetch errors
-        return GenerateResponse.fetchError( e );
+            console.log( 'Fetch error, ', e );
+            errors.push( e );
 
-    }
+        }
+    } while( tries < 10 );
+
+    // Catch Fetch errors
+    return GenerateResponse.fetchError( errors );
 
 };
