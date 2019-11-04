@@ -33,7 +33,8 @@ module.exports.main = async ( event ) => {
             // TODO Get only specific properties from Cubes
 
             return GenerateResponse( true, {
-                ...cubes
+                ...cubes,
+                errors: errors
             });
 
         } catch( e ){
@@ -45,6 +46,9 @@ module.exports.main = async ( event ) => {
     } while( tries < 10 );
 
     // Catch Fetch errors
-    return GenerateResponse.fetchError( errors );
+    return GenerateResponse( false, {
+        error: 'Fetch error',
+        errorMessage: errors
+    });
 
 };
