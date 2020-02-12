@@ -2,6 +2,7 @@ let GenerateResponse = ( success, data ) => {
     return {
         statusCode: 200,
         headers: {
+            // TODO Change this to a more secure source
             'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify({
