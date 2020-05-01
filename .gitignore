@@ -50,4 +50,3 @@ env.yml
 
 # Jetbrains IDEs
 .idea
-src/util/fauna/ssm\.js
